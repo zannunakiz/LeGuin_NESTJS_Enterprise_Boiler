@@ -90,7 +90,7 @@ export function consoleLoggingConfig(): Options {
   };
 }
 
-async function loggerFactory(
+async function useLoggerFactory(
   configService: ConfigService<AllConfigType>,
 ): Promise<Params> {
   const logLevel = configService.get('app.logLevel', { infer: true });
@@ -123,4 +123,4 @@ async function loggerFactory(
   };
 }
 
-export default loggerFactory;
+export default useLoggerFactory;

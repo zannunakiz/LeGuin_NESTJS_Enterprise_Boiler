@@ -23,7 +23,6 @@ class EnvironmentVariablesValidator {
   NODE_ENV: Environment;
 
   @IsString()
-  @IsOptional()
   APP_NAME: string;
 
   @IsUrl({ require_tld: false })

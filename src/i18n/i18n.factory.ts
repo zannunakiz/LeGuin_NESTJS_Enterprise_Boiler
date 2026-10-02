@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { I18nOptionsWithoutResolvers } from 'nestjs-i18n';
 import path from 'path';
 
-function i18nFactory(
+function useI18nFactory(
   configService: ConfigService<AllConfigType>,
 ): I18nOptionsWithoutResolvers {
   const env = configService.get('app.nodeEnv', { infer: true });
@@ -26,4 +26,4 @@ function i18nFactory(
   };
 }
 
-export default i18nFactory;
+export default useI18nFactory;

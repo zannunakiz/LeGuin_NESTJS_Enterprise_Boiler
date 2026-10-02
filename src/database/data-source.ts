@@ -1,5 +1,5 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { getConfig } from './config/database.config';
+import { getConfig as getDatabaseConfig } from './config/database.config';
 
-export const AppDataSource = new DataSource(getConfig());
+export const AppDataSource = new DataSource(getDatabaseConfig());
