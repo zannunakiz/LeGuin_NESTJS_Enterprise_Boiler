@@ -13,7 +13,6 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import compression from 'compression';
 import helmet from 'helmet';
 import { AuthService } from './api/auth/auth.service';
 import { AppModule } from './app.module';
@@ -40,9 +39,6 @@ async function bootstrap() {
 
   // Setup security headers
   app.use(helmet());
-
-  // For high-traffic websites in production, it is strongly recommended to offload compression from the application server - typically in a reverse proxy (e.g., Nginx). In that case, you should not use compression middleware.
-  app.use(compression());
 
   const configService = app.get(ConfigService<AllConfigType>);
   const reflector = app.get(Reflector);
