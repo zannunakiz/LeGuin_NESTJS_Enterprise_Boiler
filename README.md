@@ -5,8 +5,8 @@
 - [x] Postgres
 - [x] TypeORM
 - [x] Offset and Cursor based pagination support
+- [x] REST & Graphql API
 - [x] Swagger and API versioning
-- [x] SWC instead of Webpack
 - [x] BullMQ for queue
 - [x] Pino for logging
 - [x] Testing with Jest
@@ -14,6 +14,7 @@
 - [x] Docker
 - [x] Github Actions
 - [x] Commitlint & Husky
+- [x] SWC instead of Webpack
 - [ ] Rate Limiter
 
 - Made by 4SRG
