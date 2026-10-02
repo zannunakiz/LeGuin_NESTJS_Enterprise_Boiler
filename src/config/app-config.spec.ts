@@ -48,13 +48,13 @@ describe('AppConfig', () => {
     it('should return "app" when APP_NAME is not set', async () => {
       delete process.env.APP_NAME;
       const config = await appConfig();
-      expect(config.name).toBe('app');
+      expect(config.name).toThrow('isNotEmpty: APP_NAME should not be empty');
     });
 
     it('should throw an error when APP_NAME is an empty string', async () => {
       process.env.APP_NAME = '';
       const config = await appConfig();
-      expect(config.name).toBe('app');
+      expect(config.name).toThrow('isNotEmpty: APP_NAME should not be empty');
     });
   });
 

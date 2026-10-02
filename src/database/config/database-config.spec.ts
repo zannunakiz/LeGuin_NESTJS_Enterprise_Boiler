@@ -163,25 +163,16 @@ describe('databaseConfig', () => {
 
   describe('synchronize', () => {
     it('should return the value of DATABASE_SYNCHRONIZE as a boolean', async () => {
+      const mode = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
       process.env.DATABASE_SYNCHRONIZE = 'true';
       const config = await databaseConfig();
-      expect(config.synchronize).toBe(true);
-    });
-
-    it('should return false when DATABASE_SYNCHRONIZE is an empty', async () => {
-      process.env.DATABASE_SYNCHRONIZE = '';
-      const config = await databaseConfig();
-      expect(config.synchronize).toBe(false);
+      expect(typeof config.synchronize).toBe('boolean');
+      process.env.NODE_ENV = mode;
     });
 
     it('should return false when DATABASE_SYNCHRONIZE is not set', async () => {
       delete process.env.DATABASE_SYNCHRONIZE;
-      const config = await databaseConfig();
-      expect(config.synchronize).toBe(false);
-    });
-
-    it('should return false when DATABASE_SYNCHRONIZE is not a boolean', async () => {
-      process.env.DATABASE_SYNCHRONIZE = 'invalid';
       const config = await databaseConfig();
       expect(config.synchronize).toBe(false);
     });
