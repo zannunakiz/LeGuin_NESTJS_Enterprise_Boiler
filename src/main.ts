@@ -1,7 +1,6 @@
 import {
   ClassSerializerInterceptor,
   HttpStatus,
-  RequestMethod,
   UnprocessableEntityException,
   ValidationError,
   ValidationPipe,
@@ -13,6 +12,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import * as Sentry from '@sentry/node';
 import helmet from 'helmet';
 import { setupGracefulShutdown } from 'nestjs-graceful-shutdown';
 
@@ -22,7 +22,8 @@ import { type AllConfigType } from './config/config.type';
 import { Environment } from './constants/app.constant';
 import { WebSocketAdapter } from './shared/gateway/websocket.adapter';
 import { consoleLoggingConfig } from './tools/logger/logger-factory';
-import setupSwagger from './tools/swagger/setup-swagger';
+import { SentryInterceptor } from './tools/sentry/sentry.interceptor';
+import setupSwagger from './tools/swagger/swagger.setup';
 
 async function bootstrap() {
   const envToLogger: Record<`${Environment}`, any> = {
@@ -45,35 +46,7 @@ async function bootstrap() {
       bufferLogs: true,
     },
   );
-
-  // Setup security headers
-  app.use(helmet());
-
   const configService = app.get(ConfigService<AllConfigType>);
-
-  app.enableCors({
-    origin: configService.getOrThrow('app.corsOrigin', {
-      infer: true,
-    }),
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Accept',
-    credentials: true,
-  });
-
-  // Use global prefix if you don't have subdomain
-  app.setGlobalPrefix(
-    configService.getOrThrow('app.apiPrefix', { infer: true }),
-    {
-      exclude: [
-        { method: RequestMethod.GET, path: '/' },
-        { method: RequestMethod.GET, path: 'health' },
-      ],
-    },
-  );
-
-  app.enableVersioning({
-    type: VersioningType.URI,
-  });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -86,8 +59,29 @@ async function bootstrap() {
       },
     }),
   );
+  app.enableVersioning({
+    type: VersioningType.URI,
+  });
+
+  Sentry.init({
+    dsn: configService.getOrThrow('sentry.dsn', { infer: true }),
+    tracesSampleRate: 1.0,
+    environment: configService.getOrThrow('app.nodeEnv', { infer: true }),
+  });
+
+  app.use(helmet());
+  app.enableCors({
+    origin: configService.getOrThrow('app.corsOrigin', {
+      infer: true,
+    }),
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Accept',
+    credentials: true,
+  });
+
   const reflector = app.get(Reflector);
   app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
+  app.useGlobalInterceptors(new SentryInterceptor());
 
   const env = configService.getOrThrow('app.nodeEnv', { infer: true });
 

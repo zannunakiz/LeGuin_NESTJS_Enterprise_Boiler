@@ -17,6 +17,7 @@
 - [x] Rate Limiter using Redis
 - [x] Graceful Shutdown
 - [x] File Uploads
+- [x] Sentry
 - [x] Testing with Jest
 - [x] pnpm
 - [x] Docker

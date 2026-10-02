@@ -35,10 +35,11 @@ export class FileController {
   @UseInterceptors(FileInterceptor('file'))
   @Post('/single')
   singleFile(@UploadedFile() file: File) {
+    throw new Error('Test');
     if (!file) {
       throw new BadRequestException('File is required.');
     }
-    // eslint-disable-next-line no-console
+
     return console.log(file);
   }
 
@@ -65,7 +66,7 @@ export class FileController {
     if (!files.length) {
       throw new BadRequestException('Files are required.');
     }
-    // eslint-disable-next-line no-console
+
     return console.log(files);
   }
 }

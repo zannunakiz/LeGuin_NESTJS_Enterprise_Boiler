@@ -6,8 +6,13 @@ import path from 'path';
 function useGraphqlFactory(
   configService: ConfigService<AllConfigType>,
 ): ApolloDriverConfig {
+  const env = configService.get('app.nodeEnv', { infer: true });
   return {
-    autoSchemaFile: path.join(__dirname, '../generated/schema.generated.gql'),
+    playground: env === 'development' || env === 'local',
+    autoSchemaFile: path.join(
+      __dirname,
+      '../../src/generated/schema.generated.gql',
+    ),
     formatError: (...params: Parameters<ApolloDriverConfig['formatError']>) => {
       const [err] = params;
       if (

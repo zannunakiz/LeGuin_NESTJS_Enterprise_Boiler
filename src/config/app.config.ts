@@ -126,7 +126,7 @@ export function getConfig(): AppConfig {
 
 export default registerAs<AppConfig>('app', () => {
   // eslint-disable-next-line no-console
-  console.info(`Register AppConfig from environment variables`);
+  console.info(`Registering AppConfig from environment variables`);
   validateConfig(process.env, EnvironmentVariablesValidator);
   return getConfig();
 });

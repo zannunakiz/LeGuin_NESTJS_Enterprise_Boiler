@@ -5,4 +5,8 @@ export type BullConfig = {
   prefix: string;
   redis: RedisConfig;
   defaultJobOptions: JobsOptions;
+  bullBoard: {
+    username: string;
+    password: string;
+  };
 };

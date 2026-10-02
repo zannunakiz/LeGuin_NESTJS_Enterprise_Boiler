@@ -20,6 +20,7 @@ import {
 } from 'nestjs-i18n';
 import { LoggerModule } from 'nestjs-pino';
 
+import { FastifyAdapter } from '@bull-board/fastify';
 import { GracefulShutdownModule } from 'nestjs-graceful-shutdown';
 import { ApiModule } from './api/api.module';
 import { BackgroundModule } from './background/background.module';
@@ -31,6 +32,7 @@ import { MailModule } from './mail/mail.module';
 import { GatewayModule } from './shared/gateway/gateway.module';
 import useCacheFactory from './tools/cache/cache.factory';
 import { default as useLoggerFactory } from './tools/logger/logger-factory';
+import sentryConfig from './tools/sentry/sentry.config';
 import { default as useThrottlerFactory } from './tools/throttler/throttler.factory';
 
 @Module({
@@ -44,6 +46,7 @@ import { default as useThrottlerFactory } from './tools/throttler/throttler.fact
         authConfig,
         mailConfig,
         bullConfig,
+        sentryConfig,
       ],
       envFilePath: ['.env'],
     }),

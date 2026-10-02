@@ -48,7 +48,7 @@ export function getURI() {
 
 export default registerAs<RedisConfig>('redis', () => {
   // eslint-disable-next-line no-console
-  console.info(`Register RedisConfig from environment variables`);
+  console.info(`Registering RedisConfig from environment variables`);
   validateConfig(process.env, EnvironmentVariablesValidator);
   return getConfig();
 });

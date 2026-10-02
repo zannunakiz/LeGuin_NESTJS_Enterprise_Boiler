@@ -17,6 +17,14 @@ class EnvironmentVariablesValidator {
   @IsNumber()
   @IsOptional()
   RETRY_ATTEMPTS_ON_FAIL: number;
+
+  @IsString()
+  @IsOptional()
+  BULL_BOARD_USERNAME: string;
+
+  @IsString()
+  @IsOptional()
+  BULL_BOARD_PASSWORD: string;
 }
 
 export function getConfig() {
@@ -34,12 +42,16 @@ export function getConfig() {
         delay: 1000,
       },
     },
+    bullBoard: {
+      username: process.env.BULL_BOARD_USERNAME,
+      password: process.env.BULL_BOARD_PASSWORD,
+    },
   };
 }
 
 export default registerAs<BullConfig>('queue', () => {
   // eslint-disable-next-line no-console
-  console.info(`Register BullConfig from environment variables`);
+  console.info(`Registering BullConfig from environment variables`);
   validateConfig(process.env, EnvironmentVariablesValidator);
   return getConfig();
 });
