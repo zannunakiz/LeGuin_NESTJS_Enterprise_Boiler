@@ -22,7 +22,9 @@ describe('Password Utility Functions', () => {
 
     it('should throw an error when hashing fails', async () => {
       const password = 'testPassword';
-      (argon2.hash as jest.Mock).mockRejectedValue(new Error('Hashing failed'));
+      (argon2.hash as jest.Mock).mockRejectedValue(
+        new Error('Hashing failed.'),
+      );
 
       await expect(hashPassword(password)).rejects.toThrow('Hashing failed.');
       expect(argon2.hash).toHaveBeenCalledWith(password);
