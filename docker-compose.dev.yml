@@ -1,4 +1,20 @@
 services:
+  server:
+    container_name: nestjs-boilerplate-dev
+    image: nestjs-boilerplate-dev:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+      - .:/app
+    depends_on:
+      - database
+      - redis
+      - mail
+    command: >
+      sh -c "npx pnpm start:dev -y"
+
   database:
     image: postgres:16
     container_name: nestjs-boilerplate-postgres
@@ -33,11 +49,11 @@ services:
       - nestjs-boilerplate-network
 
   mail:
-    image: nestjs-boilerplate-mail
+    image: nestjs-boilerplate-mail:latest
     container_name: nestjs-boilerplate-mail
     build:
       context: .
-      dockerfile: maildev.Dockerfile
+      dockerfile: Dockerfile.maildev
     ports:
       - ${DOCKER_MAIL_PORT}:1025
       - ${DOCKER_MAIL_CLIENT_PORT}:1080

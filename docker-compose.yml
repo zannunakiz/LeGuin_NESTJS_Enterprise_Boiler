@@ -1,11 +1,6 @@
 services:
   server:
-    image: nestjs-boilerplate-server
-    container_name: nestjs-boilerplate-server
     restart: unless-stopped
-    build:
-      context: .
-      dockerfile: Dockerfile
     env_file:
       - .env
     ports:
