@@ -47,12 +47,12 @@ describe('AppConfig', () => {
 
     it('should throw error when APP_NAME is not set', async () => {
       delete process.env.APP_NAME;
-      expect(appConfig()).rejects.toThrow();
+      expect(appConfig()).rejects.toThrowError();
     });
 
     it('should throw an error when APP_NAME is an empty string', async () => {
       process.env.APP_NAME = '';
-      expect(appConfig()).rejects.toThrow();
+      expect(appConfig()).rejects.toThrowError();
     });
   });
 
