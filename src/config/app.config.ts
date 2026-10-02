@@ -14,6 +14,7 @@ import {
   Max,
   Min,
 } from 'class-validator';
+import kebabCase from 'lodash/kebabCase';
 import process from 'node:process';
 import validateConfig from '../utils/validate-config';
 import { AppConfig } from './app-config.type';
@@ -21,7 +22,7 @@ import { AppConfig } from './app-config.type';
 class EnvironmentVariablesValidator {
   @IsEnum(Environment)
   @IsOptional()
-  NODE_ENV: Environment;
+  NODE_ENV: typeof Environment;
 
   @IsBoolean()
   @IsOptional()
@@ -40,6 +41,12 @@ class EnvironmentVariablesValidator {
   @Max(65535)
   @IsOptional()
   APP_PORT: number;
+
+  @IsInt()
+  @Min(0)
+  @Max(65535)
+  @IsOptional()
+  WEBSOCKET_PORT: number;
 
   @IsInt()
   @Min(0)
@@ -89,18 +96,20 @@ class EnvironmentVariablesValidator {
 }
 
 export function getConfig(): AppConfig {
-  const port = process.env.APP_PORT
-    ? parseInt(process.env.APP_PORT, 10)
-    : process.env.PORT
-      ? parseInt(process.env.PORT, 10)
-      : 3000;
+  const port = process.env.APP_PORT ? parseInt(process.env.APP_PORT, 10) : 3000;
+
+  const websocketPort = process.env.WEBSOCKET_PORT
+    ? parseInt(process.env.WEBSOCKET_PORT, 10)
+    : port - 1;
 
   return {
     nodeEnv: (process.env.NODE_ENV || Environment.DEVELOPMENT) as Environment,
     isHttps: process.env.IS_HTTPS === 'true',
     name: process.env.APP_NAME,
+    appPrefix: kebabCase(process.env.APP_NAME),
     url: process.env.APP_URL || `http://localhost:${port}`,
     port,
+    websocketPort,
     debug: process.env.APP_DEBUG === 'true',
     apiPrefix: process.env.API_PREFIX || 'api',
     fallbackLanguage: process.env.APP_FALLBACK_LANGUAGE || 'en',

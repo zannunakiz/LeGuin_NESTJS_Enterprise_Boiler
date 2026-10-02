@@ -3,6 +3,7 @@ import redisConfig from '@/redis/redis.config';
 import validateConfig from '@/utils/validate-config';
 import { registerAs } from '@nestjs/config';
 import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
+import kebabCase from 'lodash/kebabCase';
 import { BullConfig } from './bull-config.type';
 
 class EnvironmentVariablesValidator {
@@ -20,7 +21,7 @@ class EnvironmentVariablesValidator {
 
 export function getConfig() {
   return {
-    prefix: process.env.APP_NAME,
+    prefix: `${kebabCase(process.env.APP_NAME)}-queue`,
     redis: redisConfig() as RedisConfig,
     defaultJobOptions: {
       removeOnComplete: process.env.REMOVE_ON_COMPLETE === 'true',

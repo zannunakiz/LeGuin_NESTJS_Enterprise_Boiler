@@ -8,7 +8,7 @@ describe('AuthController', () => {
 
   beforeAll(async () => {
     authServiceValue = {
-      signIn: jest.fn(),
+      login: jest.fn(),
       register: jest.fn(),
       logout: jest.fn(),
       refreshToken: jest.fn(),

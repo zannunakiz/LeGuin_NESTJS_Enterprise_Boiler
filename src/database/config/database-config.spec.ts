@@ -1,4 +1,3 @@
-import bullConfig from '@/background/queues/bull.config';
 import databaseConfig from './database.config';
 
 describe('databaseConfig', () => {
@@ -82,13 +81,13 @@ describe('databaseConfig', () => {
     it('should return the value of DATABASE_NAME', async () => {
       process.env.DATABASE_NAME = 'name';
       const config = await databaseConfig();
-      expect(config.name).toBe('name');
+      expect(config.database).toBe('name');
     });
 
     it('should return the empty value when DATABASE_NAME is an empty', async () => {
       process.env.DATABASE_NAME = '';
       const config = await databaseConfig();
-      expect(config.name).toBe('');
+      expect(config.database).toBe('');
     });
 
     it('should throw an error when DATABASE_NAME is not set', async () => {

@@ -19,13 +19,17 @@ import { setupGracefulShutdown } from 'nestjs-graceful-shutdown';
 import { AppModule } from './app.module';
 import { getConfig } from './config/app.config';
 import { type AllConfigType } from './config/config.type';
+import { Environment } from './constants/app.constant';
+import { WebSocketAdapter } from './shared/gateway/websocket.adapter';
 import { consoleLoggingConfig } from './tools/logger/logger-factory';
 import setupSwagger from './tools/swagger/setup-swagger';
 
 async function bootstrap() {
-  const envToLogger = {
+  const envToLogger: Record<`${Environment}`, any> = {
+    local: consoleLoggingConfig(),
     development: consoleLoggingConfig(),
     production: true,
+    staging: true,
     test: false,
   } as const;
 
@@ -46,15 +50,11 @@ async function bootstrap() {
   app.use(helmet());
 
   const configService = app.get(ConfigService<AllConfigType>);
-  const reflector = app.get(Reflector);
-  const isDevelopment =
-    configService.getOrThrow('app.nodeEnv', { infer: true }) === 'development';
-  const corsOrigin = configService.getOrThrow('app.corsOrigin', {
-    infer: true,
-  });
 
   app.enableCors({
-    origin: corsOrigin,
+    origin: configService.getOrThrow('app.corsOrigin', {
+      infer: true,
+    }),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Accept',
     credentials: true,
@@ -86,20 +86,34 @@ async function bootstrap() {
       },
     }),
   );
+  const reflector = app.get(Reflector);
   app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
 
-  if (isDevelopment) {
+  const env = configService.getOrThrow('app.nodeEnv', { infer: true });
+
+  if (env === 'development' || env === 'local') {
     setupSwagger(app);
   }
 
-  if (!isDevelopment) {
+  if (env !== 'local') {
     setupGracefulShutdown({ app });
   }
 
+  app.useWebSocketAdapter(new WebSocketAdapter(app, configService));
+
   await app.listen(configService.getOrThrow('app.port', { infer: true }));
 
+  const httpUrl = await app.getUrl();
+  const wsUrl = httpUrl
+    .replace(/^http/, 'ws')
+    .replace(
+      `:${configService.get('app.port', { infer: true })}`,
+      `:${configService.get('app.websocketPort', { infer: true })}`,
+    );
   // eslint-disable-next-line no-console
-  console.info(`Server running on ${await app.getUrl()}`);
+  console.info(`Server running at ${httpUrl}`);
+  // eslint-disable-next-line no-console
+  console.info(`Websocket server running at ${wsUrl}`);
 
   return app;
 }

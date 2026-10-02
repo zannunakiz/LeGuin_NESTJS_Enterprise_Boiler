@@ -2,12 +2,17 @@ import { CursorPaginationDto } from '@/common/dto/cursor-pagination/cursor-pagin
 import { CursorPaginatedDto } from '@/common/dto/cursor-pagination/paginated.dto';
 import { OffsetPaginatedDto } from '@/common/dto/offset-pagination/paginated.dto';
 import { Uuid } from '@/common/types/common.type';
+import { I18nTranslations } from '@/generated/i18n.generated';
 import { buildPaginator } from '@/utils/pagination/cursor-pagination';
 import { paginate } from '@/utils/pagination/offset-pagination';
-import { ConflictException, Injectable, Logger } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import assert from 'assert';
 import { plainToInstance } from 'class-transformer';
+import { I18nService } from 'nestjs-i18n';
 import { FindManyOptions, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ListUserDto } from './dto/list-user.dto';
@@ -18,9 +23,8 @@ import { UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
-  private readonly logger = new Logger(UserService.name);
-
   constructor(
+    private readonly i18nService: I18nService<I18nTranslations>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
   ) {}
@@ -42,7 +46,7 @@ export class UserService {
 
     if (user) {
       throw new ConflictException(
-        'User with same username or email already exists.',
+        this.i18nService.t('user.sameUsernameOrEmailAlreadyExists'),
       );
     }
 
@@ -52,10 +56,7 @@ export class UserService {
       password,
     });
 
-    const savedUser = await this.userRepository.save(newUser);
-    this.logger.debug(savedUser);
-
-    return plainToInstance(UserDto, savedUser);
+    return await this.userRepository.save(newUser);
   }
 
   async findAll(reqDto: ListUserDto): Promise<OffsetPaginatedDto<UserDto>> {
@@ -98,10 +99,11 @@ export class UserService {
   }
 
   async findOne(id: Uuid | string): Promise<UserDto> {
-    assert(id, 'id is required');
-    const user = await this.userRepository.findOneByOrFail({ id });
-
-    return user.toDto(UserDto);
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(this.i18nService.t('user.notFound'));
+    }
+    return user;
   }
 
   async update(id: Uuid | string, updateUserDto: UpdateUserDto) {
