@@ -1,5 +1,6 @@
 # Scalable Nest.js Boilerplate
 
+
 ## Features📦
 
 - [x] Fastify
@@ -20,12 +21,13 @@
 - [x] Sentry
 - [x] Testing with Jest
 - [x] pnpm
-- [x] Docker
+- [x] Docker: Dev & Prod ready on from single script.
 - [x] Github Actions
 - [x] Commitlint & Husky
 - [x] SWC instead of Webpack
 - [x] Dependency Graph Visualizer [Learn More](#2-dependency-graph-)
 - [x] Database Entity Relationship Diagram Generator [Learn More](#3-database-entity-relationship-diagram️)
+
 
 
 ### 1. Automatic API generation on the Frontend🚀
