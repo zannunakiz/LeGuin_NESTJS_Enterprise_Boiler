@@ -5,8 +5,8 @@
 - [x] Postgres
 - [x] TypeORM
 - [x] Offset and Cursor based pagination support
+- [x] REST & Graphql API
 - [x] Swagger and API versioning
-- [x] SWC instead of Webpack
 - [x] BullMQ for queue
 - [x] Pino for logging
 - [x] Testing with Jest
@@ -14,6 +14,48 @@
 - [x] Docker
 - [x] Github Actions
 - [x] Commitlint & Husky
+- [x] SWC instead of Webpack
 - [ ] Rate Limiter
 
-- Made by 4SRG
+
+
+## Additional Features 📦:
+
+### 1. Dependency Graph 📈
+
+Visualize all of your project modules and their dependencies. Also, detect circular dependencies.
+
+NOTE: Make sure [Graphviz](https://www.graphviz.org/) is installed first.
+
+- All dependencies:
+
+```
+pnpm graph:app
+```
+
+- Only circular dependencies:
+
+```
+pnpm graph:circular
+```
+
+<figure>
+<img src="./github-assets/graph.png" style="border: 5px solid teal" />
+<figcaption style="text-align: center; font-style: italic;">Sample Graph</figcaption>
+</figure>
+
+### 2. Database ERD 🛢️
+
+Visualize your database entities and their relationship.
+
+```
+pnpm erd
+```
+
+<figure>
+<img src="./github-assets/erd.png" style="border: 5px solid teal; height: 1080px;" />
+<figcaption style="text-align: center; font-style: italic;">Sample ERD</figcaption>
+</figure>
+
+
+## Made by [4SRG](https://github.com/zannunakiz)

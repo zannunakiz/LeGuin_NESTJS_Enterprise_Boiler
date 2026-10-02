@@ -1,13 +1,12 @@
 import { IEmailJob, IVerifyEmailJob } from '@/common/interfaces/job.interface';
 import { Branded } from '@/common/types/types';
 import { AllConfigType } from '@/config/config.type';
-import { SYSTEM_USER_ID } from '@/constants/app.constant';
 import { CacheKey } from '@/constants/cache.constant';
 import { ErrorCode } from '@/constants/error-code.constant';
 import { JobName, QueueName } from '@/constants/job.constant';
 import { ValidationException } from '@/exceptions/validation.exception';
 import { createCacheKey } from '@/utils/cache.util';
-import { verifyPassword } from '@/utils/password.util';
+import { verifyPassword } from '@/utils/password/password.util';
 import { InjectQueue } from '@nestjs/bullmq';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
@@ -21,7 +20,6 @@ import { plainToInstance } from 'class-transformer';
 import crypto from 'crypto';
 import ms from 'ms';
 import { Repository } from 'typeorm';
-import { SessionEntity } from '../user/entities/session.entity';
 import { UserEntity } from '../user/entities/user.entity';
 import { LoginReqDto } from './dto/login.req.dto';
 import { LoginResDto } from './dto/login.res.dto';
@@ -29,6 +27,7 @@ import { RefreshReqDto } from './dto/refresh.req.dto';
 import { RefreshResDto } from './dto/refresh.res.dto';
 import { RegisterReqDto } from './dto/register.req.dto';
 import { RegisterResDto } from './dto/register.res.dto';
+import { SessionEntity } from './entities/session.entity';
 import { JwtPayloadType } from './types/jwt-payload.type';
 import { JwtRefreshPayloadType } from './types/jwt-refresh-payload.type';
 
@@ -48,6 +47,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(SessionEntity)
+    private readonly sessionRepository: Repository<SessionEntity>,
     @InjectQueue(QueueName.EMAIL)
     private readonly emailQueue: Queue<IEmailJob, any, string>,
     @Inject(CACHE_MANAGER)
@@ -78,11 +79,11 @@ export class AuthService {
       .update(randomStringGenerator())
       .digest('hex');
 
-    const session = new SessionEntity({
+    const session = this.sessionRepository.create({
       hash,
       userId: user.id,
-      createdBy: SYSTEM_USER_ID,
-      updatedBy: SYSTEM_USER_ID,
+      createdByUserId: user.id,
+      updatedByUserId: user.id,
     });
     await session.save();
 
@@ -109,11 +110,10 @@ export class AuthService {
     }
 
     // Register user
-    const user = new UserEntity({
+    const user = this.userRepository.create({
+      username: dto.username,
       email: dto.email,
       password: dto.password,
-      createdBy: SYSTEM_USER_ID,
-      updatedBy: SYSTEM_USER_ID,
     });
 
     await user.save();

@@ -16,11 +16,11 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
-import { CreateUserReqDto } from './dto/create-user.req.dto';
-import { ListUserReqDto } from './dto/list-user.req.dto';
-import { LoadMoreUsersReqDto } from './dto/load-more-users.req.dto';
-import { UpdateUserReqDto } from './dto/update-user.req.dto';
-import { UserResDto } from './dto/user.res.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { ListUserDto } from './dto/list-user.dto';
+import { LoadMoreUsersDto } from './dto/load-more-users.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 
 @ApiTags('users')
@@ -32,64 +32,62 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @ApiAuth({
-    type: UserResDto,
+    type: UserDto,
     summary: 'Get current user',
   })
   @Get('me')
-  async getCurrentUser(@CurrentUser('id') userId: Uuid): Promise<UserResDto> {
+  async getCurrentUser(@CurrentUser('id') userId: Uuid): Promise<UserDto> {
     return await this.userService.findOne(userId);
   }
 
   @Post()
   @ApiAuth({
-    type: UserResDto,
+    type: UserDto,
     summary: 'Create user',
     statusCode: HttpStatus.CREATED,
   })
-  async createUser(
-    @Body() createUserDto: CreateUserReqDto,
-  ): Promise<UserResDto> {
+  async createUser(@Body() createUserDto: CreateUserDto): Promise<UserDto> {
     return await this.userService.create(createUserDto);
   }
 
   @Get()
   @ApiAuth({
-    type: UserResDto,
+    type: UserDto,
     summary: 'List users',
     isPaginated: true,
   })
   async findAllUsers(
-    @Query() reqDto: ListUserReqDto,
-  ): Promise<OffsetPaginatedDto<UserResDto>> {
+    @Query() reqDto: ListUserDto,
+  ): Promise<OffsetPaginatedDto<UserDto>> {
     return await this.userService.findAll(reqDto);
   }
 
   @Get('/load-more')
   @ApiAuth({
-    type: UserResDto,
+    type: UserDto,
     summary: 'Load more users',
     isPaginated: true,
     paginationType: 'cursor',
   })
   async loadMoreUsers(
-    @Query() reqDto: LoadMoreUsersReqDto,
-  ): Promise<CursorPaginatedDto<UserResDto>> {
+    @Query() reqDto: LoadMoreUsersDto,
+  ): Promise<CursorPaginatedDto<UserDto>> {
     return await this.userService.loadMoreUsers(reqDto);
   }
 
   @Get(':id')
-  @ApiAuth({ type: UserResDto, summary: 'Find user by id' })
+  @ApiAuth({ type: UserDto, summary: 'Find user by id' })
   @ApiParam({ name: 'id', type: 'String' })
-  async findUser(@Param('id', ParseUUIDPipe) id: Uuid): Promise<UserResDto> {
+  async findUser(@Param('id', ParseUUIDPipe) id: Uuid): Promise<UserDto> {
     return await this.userService.findOne(id);
   }
 
   @Patch(':id')
-  @ApiAuth({ type: UserResDto, summary: 'Update user' })
+  @ApiAuth({ type: UserDto, summary: 'Update user' })
   @ApiParam({ name: 'id', type: 'String' })
   updateUser(
     @Param('id', ParseUUIDPipe) id: Uuid,
-    @Body() reqDto: UpdateUserReqDto,
+    @Body() reqDto: UpdateUserDto,
   ) {
     return this.userService.update(id, reqDto);
   }

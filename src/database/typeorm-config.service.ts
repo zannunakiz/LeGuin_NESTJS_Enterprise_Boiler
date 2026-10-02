@@ -1,8 +1,8 @@
-import TypeOrmCustomLogger from '@/utils/typeorm-custom-logger';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 import { AllConfigType } from '../config/config.type';
+import DatabaseLogger from './logger/database-logger';
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
@@ -21,7 +21,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       }),
       dropSchema: false,
       keepConnectionAlive: true,
-      logger: TypeOrmCustomLogger.getInstance(
+      logger: DatabaseLogger.getInstance(
         'default',
         this.configService.get('database.logging', { infer: true })
           ? ['error', 'warn', 'query', 'schema']

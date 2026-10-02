@@ -69,10 +69,7 @@ class EnvironmentVariablesValidator {
   APP_CORS_ORIGIN: string;
 }
 
-export default registerAs<AppConfig>('app', () => {
-  console.info(`Register AppConfig from environment variables`);
-  validateConfig(process.env, EnvironmentVariablesValidator);
-
+export function getConfig() {
   const port = process.env.APP_PORT
     ? parseInt(process.env.APP_PORT, 10)
     : process.env.PORT
@@ -91,6 +88,12 @@ export default registerAs<AppConfig>('app', () => {
     logService: process.env.APP_LOG_SERVICE || LogService.CONSOLE,
     corsOrigin: getCorsOrigin(),
   };
+}
+
+export default registerAs<AppConfig>('app', () => {
+  console.info(`Register AppConfig from environment variables`);
+  validateConfig(process.env, EnvironmentVariablesValidator);
+  return getConfig();
 });
 
 function getCorsOrigin() {

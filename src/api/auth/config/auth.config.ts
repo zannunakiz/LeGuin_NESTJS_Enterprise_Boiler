@@ -42,10 +42,7 @@ class EnvironmentVariablesValidator {
   AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN: string;
 }
 
-export default registerAs<AuthConfig>('auth', () => {
-  console.info(`Register AuthConfig from environment variables`);
-  validateConfig(process.env, EnvironmentVariablesValidator);
-
+export function getConfig() {
   return {
     secret: process.env.AUTH_JWT_SECRET,
     expires: process.env.AUTH_JWT_TOKEN_EXPIRES_IN,
@@ -56,4 +53,10 @@ export default registerAs<AuthConfig>('auth', () => {
     confirmEmailSecret: process.env.AUTH_CONFIRM_EMAIL_SECRET,
     confirmEmailExpires: process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN,
   };
+}
+
+export default registerAs<AuthConfig>('auth', () => {
+  console.info(`Register AuthConfig from environment variables`);
+  validateConfig(process.env, EnvironmentVariablesValidator);
+  return getConfig();
 });
