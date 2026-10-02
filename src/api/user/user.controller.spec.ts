@@ -90,29 +90,29 @@ describe('UserController', () => {
       });
 
       it('should success with correctly data', async () => {
-        const errors = await validate(CreateUserDto);
+        const errors = await validate(createUserDto);
         expect(errors.length).toEqual(0);
       });
 
       it('should fail with empty username', async () => {
         createUserDto.username = '';
-        const errors = await validate(CreateUserDto);
+        const errors = await validate(createUserDto);
         expect(errors.length).toEqual(1);
         expect(errors[0].constraints).toEqual({
-          minLength: 'username must be longer than or equal to 1 characters',
+          minLength: 'username must be longer than or equal to 3 characters',
         });
       });
 
       it('should fail with empty email', async () => {
         createUserDto.email = '';
-        const errors = await validate(CreateUserDto);
+        const errors = await validate(createUserDto);
         expect(errors.length).toEqual(1);
         expect(errors[0].property).toBe('email');
       });
 
       it('should fail with invalid email', async () => {
         createUserDto.email = 'invalid-email';
-        const errors = await validate(CreateUserDto);
+        const errors = await validate(createUserDto);
         expect(errors.length).toEqual(1);
         expect(errors[0].constraints).toEqual({
           isEmail: 'email must be an email',
@@ -121,7 +121,7 @@ describe('UserController', () => {
 
       it('should fail with empty password', async () => {
         createUserDto.password = '';
-        const errors = await validate(CreateUserDto);
+        const errors = await validate(createUserDto);
         expect(errors.length).toEqual(1);
         expect(errors[0].constraints).toEqual({
           minLength: 'password must be longer than or equal to 6 characters',
@@ -130,13 +130,13 @@ describe('UserController', () => {
 
       it('should success with bio is null', async () => {
         createUserDto.bio = null;
-        const errors = await validate(CreateUserDto);
+        const errors = await validate(createUserDto);
         expect(errors.length).toEqual(0);
       });
 
       it('should success with bio is undefined', async () => {
         createUserDto.bio = undefined;
-        const errors = await validate(CreateUserDto);
+        const errors = await validate(createUserDto);
         expect(errors.length).toEqual(0);
       });
     });

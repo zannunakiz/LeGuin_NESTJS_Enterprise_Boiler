@@ -10,6 +10,7 @@ import {
   IsEnum,
   IsInt,
   IsJWT,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsPositive,
@@ -225,6 +226,7 @@ export function EmailField(
   const decorators = [
     IsEmail(),
     StringField({ toLowerCase: true, ...options }),
+    IsNotEmpty,
   ];
 
   if (options.nullable) {
@@ -419,13 +421,12 @@ export function UsernameField(
   options: Omit<ApiPropertyOptions, 'type'> & IStringFieldOptions = {},
 ): PropertyDecorator {
   const decorators = [
+    StringField({ minLength: 3, maxLength: 30, toLowerCase: true, ...options }),
+    IsNotEmpty,
     Matches(/^([\w.]*)$/, {
       message:
         'Invalid username. Make sure username do not have any whitespace and any special symbols except underscore(`_`) and period(`.`).',
     }),
-    MaxLength(30),
-    MinLength(3),
-    StringField({ toLowerCase: true, ...options }),
   ];
 
   if (options.nullable) {
