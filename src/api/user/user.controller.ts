@@ -1,8 +1,11 @@
 import { CursorPaginatedDto } from '@/common/dto/cursor-pagination/paginated.dto';
+import { ErrorDto } from '@/common/dto/error.dto';
 import { OffsetPaginatedDto } from '@/common/dto/offset-pagination/paginated.dto';
 import { Uuid } from '@/common/types/common.type';
 import { CurrentUser } from '@/decorators/current-user.decorator';
 import { ApiAuth } from '@/decorators/http.decorators';
+import { AuthGuard } from '@/guards/auth.guard';
+import { Serialize } from '@/interceptors/serialize';
 import {
   Body,
   Controller,
@@ -14,8 +17,9 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ListUserDto } from './dto/list-user.dto';
 import { LoadMoreUsersDto } from './dto/load-more-users.dto';
@@ -28,6 +32,7 @@ import { UserService } from './user.service';
   path: 'users',
   version: '1',
 })
+@UseGuards(AuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -78,6 +83,16 @@ export class UserController {
   @Get(':id')
   @ApiAuth({ type: UserDto, summary: 'Find user by id' })
   @ApiParam({ name: 'id', type: 'String' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: UserDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'User not found',
+    type: ErrorDto,
+  })
+  @Serialize(UserDto)
   async findUser(@Param('id', ParseUUIDPipe) id: Uuid): Promise<UserDto> {
     return await this.userService.findOne(id);
   }

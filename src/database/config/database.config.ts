@@ -85,7 +85,7 @@ export function getConfig(): DatabaseConfig {
       ? parseInt(process.env.DATABASE_PORT, 10)
       : 5432,
     password: process.env.DATABASE_PASSWORD,
-    name: process.env.DATABASE_NAME,
+    database: process.env.DATABASE_NAME,
     username: process.env.DATABASE_USERNAME,
     logging: process.env.DATABASE_LOGGING === 'true',
     synchronize: Boolean(
@@ -93,9 +93,6 @@ export function getConfig(): DatabaseConfig {
         process.env.DATABASE_SYNCHRONIZE === 'true',
     ),
     dropSchema: false,
-    entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-    migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
-    migrationsTableName: 'migrations',
     poolSize: process.env.DATABASE_MAX_CONNECTIONS
       ? parseInt(process.env.DATABASE_MAX_CONNECTIONS, 10)
       : 100,
@@ -109,7 +106,10 @@ export function getConfig(): DatabaseConfig {
             cert: process.env.DATABASE_CERT ?? undefined,
           }
         : undefined,
-    seeds: [__dirname + '/seeds/**/*{.ts,.js}'],
+    entities: [__dirname + '/../../**/entities/*.entity{.ts,.js}'],
+    migrations: [__dirname + '/../migrations/**/*{.ts,.js}'],
+    migrationsTableName: 'migrations',
+    seeds: [__dirname + '/../seeds/**/*{.ts,.js}'],
     seedTracking: true,
   };
 }

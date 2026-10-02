@@ -1,15 +1,21 @@
 import {
   ClassField,
+  EnumField,
   StringField,
   StringFieldOptional,
 } from '@/decorators/field.decorators';
 import { Exclude, Expose } from 'class-transformer';
+import { Role } from '../user.enum';
 
 @Exclude()
 export class UserDto {
   @StringField()
   @Expose()
   id: string;
+
+  @EnumField(() => Role)
+  @Expose()
+  role: Role;
 
   @StringField()
   @Expose()

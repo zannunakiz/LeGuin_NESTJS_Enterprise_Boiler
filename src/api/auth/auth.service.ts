@@ -2,14 +2,19 @@ import { IEmailJob, IVerifyEmailJob } from '@/common/interfaces/job.interface';
 import { Branded } from '@/common/types/types';
 import { AllConfigType } from '@/config/config.type';
 import { CacheKey } from '@/constants/cache.constant';
-import { ErrorCode } from '@/constants/error-code.constant';
 import { JobName, QueueName } from '@/constants/job.constant';
-import { ValidationException } from '@/exceptions/validation.exception';
+import { I18nTranslations } from '@/generated/i18n.generated';
 import { createCacheKey } from '@/utils/cache.util';
 import { verifyPassword } from '@/utils/password/password.util';
 import { InjectQueue } from '@nestjs/bullmq';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -19,8 +24,10 @@ import { Cache } from 'cache-manager';
 import { plainToInstance } from 'class-transformer';
 import crypto from 'crypto';
 import ms from 'ms';
+import { I18nService } from 'nestjs-i18n';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../user/entities/user.entity';
+import { Role } from '../user/user.enum';
 import { LoginReqDto } from './dto/login.req.dto';
 import { LoginResDto } from './dto/login.res.dto';
 import { RefreshReqDto } from './dto/refresh.req.dto';
@@ -43,6 +50,7 @@ type Token = Branded<
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly i18nService: I18nService<I18nTranslations>,
     private readonly configService: ConfigService<AllConfigType>,
     private readonly jwtService: JwtService,
     @InjectRepository(UserEntity)
@@ -55,12 +63,7 @@ export class AuthService {
     private readonly cacheManager: Cache,
   ) {}
 
-  /**
-   * Sign in user
-   * @param dto LoginReqDto
-   * @returns LoginResDto
-   */
-  async signIn(dto: LoginReqDto): Promise<LoginResDto> {
+  async login(dto: LoginReqDto): Promise<LoginResDto> {
     const { email, password } = dto;
     const user = await this.userRepository.findOne({
       where: { email },
@@ -87,10 +90,11 @@ export class AuthService {
     });
     await session.save();
 
-    const token = await this.createToken({
+    const token = await this._createToken({
       id: user.id,
       sessionId: session.id,
       hash,
+      role: user?.role,
     });
 
     return plainToInstance(LoginResDto, {
@@ -100,16 +104,16 @@ export class AuthService {
   }
 
   async register(dto: RegisterReqDto): Promise<RegisterResDto> {
-    // Check if the user already exists
-    const isExistUser = await UserEntity.exists({
+    const userExists = await UserEntity.exists({
       where: { email: dto.email },
     });
 
-    if (isExistUser) {
-      throw new ValidationException(ErrorCode.E003);
+    if (userExists) {
+      throw new ConflictException(
+        this.i18nService.t('user.sameUsernameOrEmailAlreadyExists'),
+      );
     }
 
-    // Register user
     const user = this.userRepository.create({
       username: dto.username,
       email: dto.email,
@@ -118,8 +122,7 @@ export class AuthService {
 
     await user.save();
 
-    // Send email verification
-    const token = await this.createVerificationToken({ id: user.id });
+    const token = await this._createVerificationToken({ id: user.id });
     const tokenExpiresIn = this.configService.getOrThrow(
       'auth.confirmEmailExpires',
       {
@@ -131,14 +134,10 @@ export class AuthService {
       token,
       ms(tokenExpiresIn),
     );
-    await this.emailQueue.add(
-      JobName.EMAIL_VERIFICATION,
-      {
-        email: dto.email,
-        token,
-      } as IVerifyEmailJob,
-      { attempts: 3, backoff: { type: 'exponential', delay: 60000 } },
-    );
+    await this.emailQueue.add(JobName.EMAIL_VERIFICATION, {
+      email: dto.email,
+      token,
+    } as IVerifyEmailJob);
 
     return plainToInstance(RegisterResDto, {
       userId: user.id,
@@ -155,17 +154,21 @@ export class AuthService {
   }
 
   async refreshToken(dto: RefreshReqDto): Promise<RefreshResDto> {
-    const { sessionId, hash } = this.verifyRefreshToken(dto.refreshToken);
+    const { sessionId, hash } = this._verifyRefreshToken(dto.refreshToken);
     const session = await SessionEntity.findOneBy({ id: sessionId });
 
     if (!session || session.hash !== hash) {
       throw new UnauthorizedException();
     }
 
-    const user = await this.userRepository.findOneOrFail({
+    const user = await this.userRepository.findOne({
       where: { id: session.userId },
       select: ['id'],
     });
+
+    if (!user) {
+      throw new NotFoundException(this.i18nService.t('user.notFound'));
+    }
 
     const newHash = crypto
       .createHash('sha256')
@@ -174,10 +177,11 @@ export class AuthService {
 
     SessionEntity.update(session.id, { hash: newHash });
 
-    return await this.createToken({
+    return await this._createToken({
       id: user.id,
       sessionId: session.id,
       hash: newHash,
+      role: user?.role,
     });
   }
 
@@ -191,7 +195,6 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    // Force logout if the session is in the blacklist
     const isSessionBlacklisted = await this.cacheManager.store.get<boolean>(
       createCacheKey(CacheKey.SESSION_BLACKLIST, payload.sessionId),
     );
@@ -203,7 +206,7 @@ export class AuthService {
     return payload;
   }
 
-  private verifyRefreshToken(token: string): JwtRefreshPayloadType {
+  private _verifyRefreshToken(token: string): JwtRefreshPayloadType {
     try {
       return this.jwtService.verify(token, {
         secret: this.configService.getOrThrow('auth.refreshSecret', {
@@ -215,7 +218,9 @@ export class AuthService {
     }
   }
 
-  private async createVerificationToken(data: { id: string }): Promise<string> {
+  private async _createVerificationToken(data: {
+    id: string;
+  }): Promise<string> {
     return await this.jwtService.signAsync(
       {
         id: data.id,
@@ -231,10 +236,11 @@ export class AuthService {
     );
   }
 
-  private async createToken(data: {
+  private async _createToken(data: {
     id: string;
     sessionId: string;
     hash: string;
+    role: Role;
   }): Promise<Token> {
     const tokenExpiresIn = this.configService.getOrThrow('auth.expires', {
       infer: true,
@@ -245,7 +251,7 @@ export class AuthService {
       await this.jwtService.signAsync(
         {
           id: data.id,
-          role: '', // TODO: add role
+          role: data?.role,
           sessionId: data.sessionId,
         },
         {

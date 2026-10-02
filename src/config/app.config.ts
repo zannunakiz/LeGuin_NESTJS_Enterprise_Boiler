@@ -14,6 +14,7 @@ import {
   Max,
   Min,
 } from 'class-validator';
+import kebabCase from 'lodash/kebabCase';
 import process from 'node:process';
 import validateConfig from '../utils/validate-config';
 import { AppConfig } from './app-config.type';
@@ -21,7 +22,7 @@ import { AppConfig } from './app-config.type';
 class EnvironmentVariablesValidator {
   @IsEnum(Environment)
   @IsOptional()
-  NODE_ENV: Environment;
+  NODE_ENV: typeof Environment;
 
   @IsBoolean()
   @IsOptional()
@@ -99,6 +100,7 @@ export function getConfig(): AppConfig {
     nodeEnv: (process.env.NODE_ENV || Environment.DEVELOPMENT) as Environment,
     isHttps: process.env.IS_HTTPS === 'true',
     name: process.env.APP_NAME,
+    appPrefix: kebabCase(process.env.APP_NAME),
     url: process.env.APP_URL || `http://localhost:${port}`,
     port,
     debug: process.env.APP_DEBUG === 'true',

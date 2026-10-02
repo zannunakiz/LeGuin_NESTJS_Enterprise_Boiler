@@ -3,19 +3,16 @@ import { ErrorDetailDto } from './error-detail.dto';
 
 export class ErrorDto {
   @ApiProperty()
-  timestamp: string;
-
-  @ApiProperty()
   statusCode: number;
 
   @ApiProperty()
   error: string;
 
-  @ApiPropertyOptional()
-  errorCode?: string;
-
   @ApiProperty()
   message: string;
+
+  @ApiPropertyOptional()
+  errorCode?: string;
 
   @ApiPropertyOptional({ type: ErrorDetailDto, isArray: true })
   details?: ErrorDetailDto[];

@@ -46,15 +46,11 @@ async function bootstrap() {
   app.use(helmet());
 
   const configService = app.get(ConfigService<AllConfigType>);
-  const reflector = app.get(Reflector);
-  const isDevelopment =
-    configService.getOrThrow('app.nodeEnv', { infer: true }) === 'development';
-  const corsOrigin = configService.getOrThrow('app.corsOrigin', {
-    infer: true,
-  });
 
   app.enableCors({
-    origin: corsOrigin,
+    origin: configService.getOrThrow('app.corsOrigin', {
+      infer: true,
+    }),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Accept',
     credentials: true,
@@ -86,13 +82,16 @@ async function bootstrap() {
       },
     }),
   );
+  const reflector = app.get(Reflector);
   app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
 
-  if (isDevelopment) {
+  const env = configService.getOrThrow('app.nodeEnv', { infer: true });
+
+  if (env === 'development' || env === 'local') {
     setupSwagger(app);
   }
 
-  if (!isDevelopment) {
+  if (env !== 'local') {
     setupGracefulShutdown({ app });
   }
 
