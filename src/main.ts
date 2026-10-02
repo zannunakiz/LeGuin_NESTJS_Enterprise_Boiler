@@ -14,6 +14,7 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import helmet from 'helmet';
+
 import { AppModule } from './app.module';
 import { type AllConfigType } from './config/config.type';
 import { consoleLoggingConfig } from './tools/logger/logger-factory';
