@@ -19,10 +19,6 @@ class EnvironmentVariablesValidator {
 
   @ValidateIf((envValues) => !envValues.DATABASE_URL)
   @IsString()
-  DATABASE_TYPE: string;
-
-  @ValidateIf((envValues) => !envValues.DATABASE_URL)
-  @IsString()
   DATABASE_HOST: string;
 
   @ValidateIf((envValues) => !envValues.DATABASE_URL)
@@ -79,7 +75,7 @@ class EnvironmentVariablesValidator {
 
 export function getConfig(): DatabaseConfig {
   return {
-    type: process.env.DATABASE_TYPE as any,
+    type: 'postgres',
     host: process.env.DATABASE_HOST,
     port: process.env.DATABASE_PORT
       ? parseInt(process.env.DATABASE_PORT, 10)

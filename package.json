@@ -28,6 +28,8 @@
     "db:drop": "env-cmd ts-node ./node_modules/typeorm-extension/bin/cli.cjs db:drop",
     "seed:run": "env-cmd ts-node ./node_modules/typeorm-extension/bin/cli.cjs seed:run",
     "seed:create": "env-cmd ts-node ./node_modules/typeorm-extension/bin/cli.cjs seed:create",
+    "docker:dev:up": "docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.dev.yml up -d",
+    "docker:dev:down": "docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.dev.yml down",
     "prepare": "husky || true",
     "graph:app": "madge ./src/main.ts --image ./.tmp/graph.png",
     "graph:circular": "madge --circular ./src/main.ts --image ./.tmp/circular.png",
@@ -51,6 +53,7 @@
     "@nestjs/graphql": "^12.2.1",
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/mapped-types": "^2.0.5",
+    "@nestjs/microservices": "^10.4.8",
     "@nestjs/platform-fastify": "^10.4.4",
     "@nestjs/platform-ws": "^10.4.7",
     "@nestjs/swagger": "^7.4.2",
@@ -62,6 +65,7 @@
     "@sentry/tracing": "^7.29.0",
     "argon2": "^0.41.1",
     "axios": "^1.7.7",
+    "bufferutil": "^4.0.8",
     "bullmq": "^5.19.1",
     "cache-manager": "^5.7.6",
     "cache-manager-ioredis-yet": "^2.1.2",
@@ -91,7 +95,8 @@
     "tslib": "^2.7.0",
     "typeorm": "^0.3.20",
     "typeorm-extension": "^3.6.2",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",
