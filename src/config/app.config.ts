@@ -5,6 +5,7 @@ import {
   IsBoolean,
   IsEnum,
   IsInt,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
@@ -23,6 +24,7 @@ class EnvironmentVariablesValidator {
   NODE_ENV: Environment;
 
   @IsString()
+  @IsNotEmpty()
   APP_NAME: string;
 
   @IsUrl({ require_tld: false })
@@ -87,7 +89,7 @@ export function getConfig(): AppConfig {
 
   return {
     nodeEnv: process.env.NODE_ENV || Environment.DEVELOPMENT,
-    name: process.env.APP_NAME || 'app',
+    name: process.env.APP_NAME,
     url: process.env.APP_URL || `http://localhost:${port}`,
     port,
     debug: process.env.APP_DEBUG === 'true',

@@ -88,9 +88,10 @@ export function getConfig(): DatabaseConfig {
     name: process.env.DATABASE_NAME,
     username: process.env.DATABASE_USERNAME,
     logging: process.env.DATABASE_LOGGING === 'true',
-    synchronize:
+    synchronize: Boolean(
       process.env.NODE_ENV === 'development' &&
-      process.env.DATABASE_SYNCHRONIZE === 'true',
+        process.env.DATABASE_SYNCHRONIZE === 'true',
+    ),
     dropSchema: false,
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     migrations: [__dirname + '/migrations/**/*{.ts,.js}'],

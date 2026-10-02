@@ -45,7 +45,7 @@ describe('AppConfig', () => {
       expect(config.name).toBe('My App');
     });
 
-    it('should return "App" when APP_NAME is not set', async () => {
+    it('should return "app" when APP_NAME is not set', async () => {
       delete process.env.APP_NAME;
       const config = await appConfig();
       expect(config.name).toBe('app');
