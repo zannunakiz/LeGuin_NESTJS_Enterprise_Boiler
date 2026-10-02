@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import {
   HealthCheckService,
   HttpHealthIndicator,
+  MicroserviceHealthIndicator,
   TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -19,6 +20,9 @@ describe('HealthController', () => {
   >;
   let httpUseValue: Partial<Record<keyof HttpHealthIndicator, jest.Mock>>;
   let dbUseValue: Partial<Record<keyof TypeOrmHealthIndicator, jest.Mock>>;
+  let microServiceValue: Partial<
+    Record<keyof MicroserviceHealthIndicator, jest.Mock>
+  >;
 
   beforeAll(async () => {
     configServiceValue = {
@@ -34,6 +38,10 @@ describe('HealthController', () => {
     };
 
     dbUseValue = {
+      pingCheck: jest.fn(),
+    };
+
+    microServiceValue = {
       pingCheck: jest.fn(),
     };
 
@@ -55,6 +63,10 @@ describe('HealthController', () => {
         {
           provide: TypeOrmHealthIndicator,
           useValue: dbUseValue,
+        },
+        {
+          provide: MicroserviceHealthIndicator,
+          useValue: microServiceValue,
         },
       ],
     }).compile();
@@ -80,6 +92,7 @@ describe('HealthController', () => {
           db: {
             status: 'up',
           },
+          redis: { status: 'up' },
           http: {
             status: 'up',
           },

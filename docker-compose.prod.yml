@@ -1,0 +1,9 @@
+services:
+  server:
+    container_name: nestjs-boilerplate-prod
+    image: nestjs-boilerplate-prod:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      sh -c "npx pnpm start:prod -y"

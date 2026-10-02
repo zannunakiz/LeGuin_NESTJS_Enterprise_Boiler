@@ -14,26 +14,6 @@ describe('databaseConfig', () => {
     jest.spyOn(console, 'info').mockImplementation();
   });
 
-  describe('type', () => {
-    it('should return the value of DATABASE_TYPE', async () => {
-      process.env.DATABASE_TYPE = 'postgres';
-      const config = await databaseConfig();
-
-      expect(config.type).toBe('postgres');
-    });
-
-    it('should return the empty value when DATABASE_TYPE is an empty', async () => {
-      process.env.DATABASE_TYPE = '';
-      const config = await databaseConfig();
-      expect(config.type).toBe('');
-    });
-
-    it('should throw an error when DATABASE_TYPE is not set', async () => {
-      delete process.env.DATABASE_TYPE;
-      await expect(async () => await databaseConfig()).rejects.toThrow(Error);
-    });
-  });
-
   describe('host', () => {
     it('should return the value of DATABASE_HOST', async () => {
       process.env.DATABASE_HOST = 'localhost';

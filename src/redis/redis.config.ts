@@ -35,7 +35,7 @@ class EnvironmentVariablesValidator {
 export function getConfig() {
   return {
     host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT, 10) : 6379,
+    port: parseInt(process.env.REDIS_PORT, 10),
     password: process.env.REDIS_PASSWORD,
     tlsEnabled: process.env.REDIS_TLS_ENABLED === 'true',
   };
@@ -48,7 +48,7 @@ export function getURI() {
 
 export default registerAs<RedisConfig>('redis', () => {
   // eslint-disable-next-line no-console
-  console.info(`Register RedisConfig from environment variables`);
+  console.info(`Registering RedisConfig from environment variables`);
   validateConfig(process.env, EnvironmentVariablesValidator);
   return getConfig();
 });

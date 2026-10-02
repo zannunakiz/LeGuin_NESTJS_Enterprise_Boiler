@@ -39,7 +39,7 @@ class EnvironmentVariablesValidator {
   @IsInt()
   @Min(0)
   @Max(65535)
-  @IsOptional()
+  @IsNotEmpty()
   APP_PORT: number;
 
   @IsInt()
@@ -96,7 +96,7 @@ class EnvironmentVariablesValidator {
 }
 
 export function getConfig(): AppConfig {
-  const port = process.env.APP_PORT ? parseInt(process.env.APP_PORT, 10) : 3000;
+  const port = parseInt(process.env.APP_PORT, 10);
 
   const websocketPort = process.env.WEBSOCKET_PORT
     ? parseInt(process.env.WEBSOCKET_PORT, 10)
@@ -126,7 +126,7 @@ export function getConfig(): AppConfig {
 
 export default registerAs<AppConfig>('app', () => {
   // eslint-disable-next-line no-console
-  console.info(`Register AppConfig from environment variables`);
+  console.info(`Registering AppConfig from environment variables`);
   validateConfig(process.env, EnvironmentVariablesValidator);
   return getConfig();
 });

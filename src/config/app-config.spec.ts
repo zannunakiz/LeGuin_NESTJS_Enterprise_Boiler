@@ -77,21 +77,13 @@ describe('AppConfig', () => {
   });
 
   describe('port', () => {
+    it('should throw error when APP_PORT is not set', async () => {
+      delete process.env.APP_PORT;
+      await expect(async () => await appConfig()).rejects.toThrow(Error);
+    });
+
     it('should return the value of APP_PORT as a number', async () => {
       process.env.APP_PORT = '3000';
-      const config = await appConfig();
-      expect(config.port).toBe(3000);
-    });
-
-    it('should return the value of PORT as a number', async () => {
-      process.env.PORT = '3000';
-      const config = await appConfig();
-      expect(config.port).toBe(3000);
-    });
-
-    it('should return 3000 when APP_PORT and PORT are not set', async () => {
-      delete process.env.APP_PORT;
-      delete process.env.PORT;
       const config = await appConfig();
       expect(config.port).toBe(3000);
     });

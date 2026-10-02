@@ -41,15 +41,9 @@ lerna-debug.log*
 
 # dotenv environment variable files
 .env
-.env.local
-.env.test
-.env.test.local
-.env.development
-.env.development.local
-.env.staging
-.env.staging.local
-.env.production
-.env.production.local
+.env.*
+!.env.example
+!.env.docker.example
 
 # temp directory
 .temp
@@ -70,3 +64,6 @@ docs/.vuepress/.temp
 docs/.vuepress/.cache
 # VuePress default build output directory
 docs/.vuepress/dist
+
+.docker/**/*
+!.docker/.gitkeep
