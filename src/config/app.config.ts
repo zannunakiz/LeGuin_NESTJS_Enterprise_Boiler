@@ -39,7 +39,7 @@ class EnvironmentVariablesValidator {
   @IsInt()
   @Min(0)
   @Max(65535)
-  @IsOptional()
+  @IsNotEmpty()
   APP_PORT: number;
 
   @IsInt()
