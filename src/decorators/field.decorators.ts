@@ -16,6 +16,7 @@ import {
   IsString,
   IsUrl,
   IsUUID,
+  Matches,
   Max,
   MaxLength,
   Min,
@@ -412,4 +413,29 @@ export function ClassFieldOptional<TClass extends Constructor>(
     IsOptional({ each: options.each }),
     ClassField(getClass, { required: false, ...options }),
   );
+}
+
+export function UsernameField(
+  options: Omit<ApiPropertyOptions, 'type'> & IStringFieldOptions = {},
+): PropertyDecorator {
+  const decorators = [
+    Matches(/^([\w.]*)$/, {
+      message:
+        'Invalid username. Make sure username do not have any whitespace and any special symbols except underscore(`_`) and period(`.`).',
+    }),
+    MaxLength(30),
+    StringField({ toLowerCase: true, ...options }),
+  ];
+
+  if (options.nullable) {
+    decorators.push(IsNullable());
+  } else {
+    decorators.push(NotEquals(null));
+  }
+
+  if (options.swagger !== false) {
+    decorators.push(ApiProperty({ type: String, ...options }));
+  }
+
+  return applyDecorators(...decorators);
 }

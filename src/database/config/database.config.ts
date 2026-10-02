@@ -77,10 +77,7 @@ class EnvironmentVariablesValidator {
   DATABASE_CERT: string;
 }
 
-export default registerAs<DatabaseConfig>('database', () => {
-  console.info(`Register DatabaseConfig from environment variables`);
-  validateConfig(process.env, EnvironmentVariablesValidator);
-
+export function getConfig() {
   return {
     type: process.env.DATABASE_TYPE,
     host: process.env.DATABASE_HOST,
@@ -101,4 +98,10 @@ export default registerAs<DatabaseConfig>('database', () => {
     key: process.env.DATABASE_KEY,
     cert: process.env.DATABASE_CERT,
   };
+}
+
+export default registerAs<DatabaseConfig>('database', () => {
+  console.info(`Register DatabaseConfig from environment variables`);
+  validateConfig(process.env, EnvironmentVariablesValidator);
+  return getConfig();
 });

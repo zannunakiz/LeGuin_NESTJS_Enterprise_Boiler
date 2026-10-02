@@ -2,21 +2,18 @@ import { CursorPaginationDto } from '@/common/dto/cursor-pagination/cursor-pagin
 import { CursorPaginatedDto } from '@/common/dto/cursor-pagination/paginated.dto';
 import { OffsetPaginatedDto } from '@/common/dto/offset-pagination/paginated.dto';
 import { Uuid } from '@/common/types/common.type';
-import { SYSTEM_USER_ID } from '@/constants/app.constant';
-import { ErrorCode } from '@/constants/error-code.constant';
-import { ValidationException } from '@/exceptions/validation.exception';
-import { buildPaginator } from '@/utils/cursor-pagination';
-import { paginate } from '@/utils/offset-pagination';
-import { Injectable, Logger } from '@nestjs/common';
+import { buildPaginator } from '@/utils/pagination/cursor-pagination';
+import { paginate } from '@/utils/pagination/offset-pagination';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import assert from 'assert';
 import { plainToInstance } from 'class-transformer';
-import { Repository } from 'typeorm';
-import { CreateUserReqDto } from './dto/create-user.req.dto';
-import { ListUserReqDto } from './dto/list-user.req.dto';
-import { LoadMoreUsersReqDto } from './dto/load-more-users.req.dto';
-import { UpdateUserReqDto } from './dto/update-user.req.dto';
-import { UserResDto } from './dto/user.res.dto';
+import { FindManyOptions, Repository } from 'typeorm';
+import { CreateUserDto } from './dto/create-user.dto';
+import { ListUserDto } from './dto/list-user.dto';
+import { LoadMoreUsersDto } from './dto/load-more-users.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserDto } from './dto/user.dto';
 import { UserEntity } from './entities/user.entity';
 
 @Injectable()
@@ -28,8 +25,8 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  async create(dto: CreateUserReqDto): Promise<UserResDto> {
-    const { username, email, password, bio, image } = dto;
+  async create(dto: CreateUserDto): Promise<UserDto> {
+    const { username, email, password } = dto;
 
     // check uniqueness of username/email
     const user = await this.userRepository.findOne({
@@ -44,28 +41,24 @@ export class UserService {
     });
 
     if (user) {
-      throw new ValidationException(ErrorCode.E001);
+      throw new ConflictException(
+        'User with same username or email already exists.',
+      );
     }
 
-    const newUser = new UserEntity({
+    const newUser = this.userRepository.create({
       username,
       email,
       password,
-      bio,
-      image,
-      createdBy: SYSTEM_USER_ID,
-      updatedBy: SYSTEM_USER_ID,
     });
 
     const savedUser = await this.userRepository.save(newUser);
     this.logger.debug(savedUser);
 
-    return plainToInstance(UserResDto, savedUser);
+    return plainToInstance(UserDto, savedUser);
   }
 
-  async findAll(
-    reqDto: ListUserReqDto,
-  ): Promise<OffsetPaginatedDto<UserResDto>> {
+  async findAll(reqDto: ListUserDto): Promise<OffsetPaginatedDto<UserDto>> {
     const query = this.userRepository
       .createQueryBuilder('user')
       .orderBy('user.createdAt', 'DESC');
@@ -73,12 +66,12 @@ export class UserService {
       skipCount: false,
       takeAll: false,
     });
-    return new OffsetPaginatedDto(plainToInstance(UserResDto, users), metaDto);
+    return new OffsetPaginatedDto(plainToInstance(UserDto, users), metaDto);
   }
 
   async loadMoreUsers(
-    reqDto: LoadMoreUsersReqDto,
-  ): Promise<CursorPaginatedDto<UserResDto>> {
+    reqDto: LoadMoreUsersDto,
+  ): Promise<CursorPaginatedDto<UserDto>> {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
     const paginator = buildPaginator({
       entity: UserEntity,
@@ -101,28 +94,30 @@ export class UserService {
       reqDto,
     );
 
-    return new CursorPaginatedDto(plainToInstance(UserResDto, data), metaDto);
+    return new CursorPaginatedDto(plainToInstance(UserDto, data), metaDto);
   }
 
-  async findOne(id: Uuid): Promise<UserResDto> {
+  async findOne(id: Uuid | string): Promise<UserDto> {
     assert(id, 'id is required');
     const user = await this.userRepository.findOneByOrFail({ id });
 
-    return user.toDto(UserResDto);
+    return user.toDto(UserDto);
   }
 
-  async update(id: Uuid, updateUserDto: UpdateUserReqDto) {
+  async update(id: Uuid | string, updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.findOneByOrFail({ id });
 
-    user.bio = updateUserDto.bio;
-    user.image = updateUserDto.image;
-    user.updatedBy = SYSTEM_USER_ID;
-
-    await this.userRepository.save(user);
+    await this.userRepository.save(
+      this.userRepository.merge(user, updateUserDto),
+    );
   }
 
-  async remove(id: Uuid) {
+  async remove(id: Uuid | string) {
     await this.userRepository.findOneByOrFail({ id });
     await this.userRepository.softDelete(id);
+  }
+
+  async getAll(options?: FindManyOptions<UserEntity>) {
+    return this.userRepository.find(options);
   }
 }
