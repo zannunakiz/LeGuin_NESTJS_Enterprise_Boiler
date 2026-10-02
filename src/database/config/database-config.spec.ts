@@ -163,12 +163,10 @@ describe('databaseConfig', () => {
 
   describe('synchronize', () => {
     it('should return the value of DATABASE_SYNCHRONIZE as a boolean', async () => {
-      const mode = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
       process.env.DATABASE_SYNCHRONIZE = 'true';
       const config = await databaseConfig();
       expect(typeof config.synchronize).toBe('boolean');
-      process.env.NODE_ENV = mode;
     });
 
     it('should return false when DATABASE_SYNCHRONIZE is not set', async () => {
