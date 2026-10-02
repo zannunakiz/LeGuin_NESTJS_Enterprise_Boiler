@@ -7,6 +7,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../user/entities/user.entity';
 import { AuthService } from './auth.service';
+import { SessionEntity } from './entities/session.entity';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -14,6 +15,9 @@ describe('AuthService', () => {
   let jwtServiceValue: Partial<Record<keyof JwtService, jest.Mock>>;
   let userRepositoryValue: Partial<
     Record<keyof Repository<UserEntity>, jest.Mock>
+  >;
+  let sessionRepositoryValue: Partial<
+    Record<keyof Repository<SessionEntity>, jest.Mock>
   >;
 
   beforeAll(async () => {
@@ -27,6 +31,10 @@ describe('AuthService', () => {
     };
 
     userRepositoryValue = {
+      findOne: jest.fn(),
+    };
+
+    sessionRepositoryValue = {
       findOne: jest.fn(),
     };
 
@@ -44,6 +52,10 @@ describe('AuthService', () => {
         {
           provide: getRepositoryToken(UserEntity),
           useValue: userRepositoryValue,
+        },
+        {
+          provide: getRepositoryToken(SessionEntity),
+          useValue: sessionRepositoryValue,
         },
         {
           provide: getQueueToken('email'),
