@@ -28,6 +28,7 @@ import { default as useBullFactory } from './background/queues/bull.factory';
 import { default as useGraphqlFactory } from './graphql/graphql.factory';
 import { default as useI18nFactory } from './i18n/i18n.factory';
 import { MailModule } from './mail/mail.module';
+import { GatewayModule } from './shared/gateway/gateway.module';
 import useCacheFactory from './tools/cache/cache.factory';
 import { default as useLoggerFactory } from './tools/logger/logger-factory';
 import { default as useThrottlerFactory } from './tools/throttler/throttler.factory';
@@ -95,6 +96,7 @@ import { default as useThrottlerFactory } from './tools/throttler/throttler.fact
     }),
     BackgroundModule,
     MailModule,
+    GatewayModule,
     ApiModule,
   ],
   providers: [

@@ -46,6 +46,12 @@ class EnvironmentVariablesValidator {
   @Min(0)
   @Max(65535)
   @IsOptional()
+  WEBSOCKET_PORT: number;
+
+  @IsInt()
+  @Min(0)
+  @Max(65535)
+  @IsOptional()
   PORT: number;
 
   @IsBoolean()
@@ -90,11 +96,11 @@ class EnvironmentVariablesValidator {
 }
 
 export function getConfig(): AppConfig {
-  const port = process.env.APP_PORT
-    ? parseInt(process.env.APP_PORT, 10)
-    : process.env.PORT
-      ? parseInt(process.env.PORT, 10)
-      : 3000;
+  const port = process.env.APP_PORT ? parseInt(process.env.APP_PORT, 10) : 3000;
+
+  const websocketPort = process.env.WEBSOCKET_PORT
+    ? parseInt(process.env.WEBSOCKET_PORT, 10)
+    : port - 1;
 
   return {
     nodeEnv: (process.env.NODE_ENV || Environment.DEVELOPMENT) as Environment,
@@ -103,6 +109,7 @@ export function getConfig(): AppConfig {
     appPrefix: kebabCase(process.env.APP_NAME),
     url: process.env.APP_URL || `http://localhost:${port}`,
     port,
+    websocketPort,
     debug: process.env.APP_DEBUG === 'true',
     apiPrefix: process.env.API_PREFIX || 'api',
     fallbackLanguage: process.env.APP_FALLBACK_LANGUAGE || 'en',
