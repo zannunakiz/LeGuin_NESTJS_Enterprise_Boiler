@@ -23,7 +23,7 @@ export abstract class CreatorModel extends BaseModel {
   @JoinColumn({ name: 'updatedByUserId' })
   updatedBy: UserEntity;
 
-  @Index()
+  @Index({ where: '"deletedAt" IS NULL' })
   @Column({ nullable: true })
   deletedByUserId: string;
 

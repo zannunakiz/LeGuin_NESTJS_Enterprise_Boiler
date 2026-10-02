@@ -1,14 +1,15 @@
 import { AllConfigType } from '@/config/config.type';
 import { type BullRootModuleOptions } from '@nestjs/bullmq';
 import { ConfigService } from '@nestjs/config';
-import { config as bullConfig } from './bull.config';
+import bullConfig from './bull.config';
 
-function bullFactory(
+async function useBullFactory(
   configService: ConfigService<AllConfigType>,
-): BullRootModuleOptions {
+): Promise<BullRootModuleOptions> {
+  const config = await bullConfig();
   return {
-    prefix: bullConfig.prefix,
-    defaultJobOptions: bullConfig.defaultJobOptions,
+    prefix: config.prefix,
+    defaultJobOptions: config.defaultJobOptions,
     connection: {
       host: configService.getOrThrow('redis.host', {
         infer: true,
@@ -24,4 +25,4 @@ function bullFactory(
   };
 }
 
-export default bullFactory;
+export default useBullFactory;

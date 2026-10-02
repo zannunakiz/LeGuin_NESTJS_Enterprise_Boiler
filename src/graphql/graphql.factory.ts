@@ -3,7 +3,7 @@ import { ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigService } from '@nestjs/config';
 import path from 'path';
 
-function graphqlFactory(
+function useGraphqlFactory(
   configService: ConfigService<AllConfigType>,
 ): ApolloDriverConfig {
   return {
@@ -23,4 +23,4 @@ function graphqlFactory(
   };
 }
 
-export default graphqlFactory;
+export default useGraphqlFactory;

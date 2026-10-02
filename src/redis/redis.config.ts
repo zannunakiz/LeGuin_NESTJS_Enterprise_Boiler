@@ -41,7 +41,13 @@ export function getConfig() {
   };
 }
 
+export function getURI() {
+  const config = getConfig();
+  return `redis://${config.password ? `:${config.password}@` : ''}${config.host}:${config.port}`;
+}
+
 export default registerAs<RedisConfig>('redis', () => {
+  // eslint-disable-next-line no-console
   console.info(`Register RedisConfig from environment variables`);
   validateConfig(process.env, EnvironmentVariablesValidator);
   return getConfig();

@@ -1,15 +1,14 @@
 import { AllConfigType } from '@/config/config.type';
-import { Environment } from '@/constants/app.constant';
 import { ConfigService } from '@nestjs/config';
 import { I18nOptionsWithoutResolvers } from 'nestjs-i18n';
 import path from 'path';
 
-function i18nFactory(
+function useI18nFactory(
   configService: ConfigService<AllConfigType>,
 ): I18nOptionsWithoutResolvers {
   const env = configService.get('app.nodeEnv', { infer: true });
-  const isLocal = env === Environment.LOCAL;
-  const isDevelopment = env === Environment.DEVELOPMENT;
+  const isLocal = env === 'local';
+  const isDevelopment = env === 'development';
   return {
     fallbackLanguage: configService.getOrThrow('app.fallbackLanguage', {
       infer: true,
@@ -26,4 +25,4 @@ function i18nFactory(
   };
 }
 
-export default i18nFactory;
+export default useI18nFactory;

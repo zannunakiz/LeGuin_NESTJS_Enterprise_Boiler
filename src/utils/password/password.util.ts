@@ -1,12 +1,7 @@
 import argon2 from 'argon2';
 
 export const hashPassword = async (password: string): Promise<string> => {
-  try {
-    return await argon2.hash(password);
-  } catch (err) {
-    console.error(err);
-    throw new Error('Can not hash password.');
-  }
+  return argon2.hash(password);
 };
 
 export const verifyPassword = async (
@@ -15,8 +10,7 @@ export const verifyPassword = async (
 ): Promise<boolean> => {
   try {
     return await argon2.verify(hashedPassword, password);
-  } catch (err) {
-    console.error(err);
+  } catch (_) {
     return false;
   }
 };
