@@ -1,5 +1,6 @@
 # Scalable Nest.js Boilerplate
 
+
 ## Tech 🖥️
 
 - [x] Fastify
@@ -10,7 +11,10 @@
 - [x] REST & Graphql API
 - [x] Swagger and API versioning for REST API
 - [x] BullMQ for queue
+- [x] Caching using Redis
 - [x] Pino for logging
+- [x] Rate Limiter using Redis
+- [x] Graceful Shutdown
 - [x] Testing with Jest
 - [x] pnpm
 - [x] Docker
@@ -55,10 +59,6 @@ pnpm erd:generate
 <img src="./github-assets/erd.png" style="border: 5px solid teal; height: 1080px;" />
 <figcaption style="text-align: center; font-style: italic;">Sample ERD</figcaption>
 </figure>
-
-Extended from [nestjs-boilerplate](https://github.com/vndevteam/nestjs-boilerplate?tab=readme-ov-file)
-
-
 
 
 Made by [4SRG](https://github.com/zannunakiz)
