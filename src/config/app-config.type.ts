@@ -9,4 +9,8 @@ export type AppConfig = {
   logLevel: string;
   logService: string;
   corsOrigin: boolean | string | RegExp | (string | RegExp)[];
+  throttle: {
+    limit: number;
+    ttl: number;
+  };
 };

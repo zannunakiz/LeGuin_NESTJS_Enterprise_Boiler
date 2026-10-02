@@ -11,9 +11,9 @@ const generateErd = async () => {
       indexTable: true,
     });
     await typeormMarkdown.build();
-    console.log('\x1b[34mERD generated successfully.');
+    console.log('\n\x1b[34mDatabase ERD generated successfully.');
   } catch (error) {
-    console.error('\x1b[31mError generating document:', error);
+    console.error('\n\x1b[31mError generating ERD:', error);
   }
 };
 

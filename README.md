@@ -1,4 +1,6 @@
-# Tech
+# Scalable Nest.js Boilerplate
+
+## Tech 🖥️
 
 - [x] Fastify
 - [x] NestJS
@@ -6,7 +8,7 @@
 - [x] TypeORM
 - [x] Offset and Cursor based pagination support
 - [x] REST & Graphql API
-- [x] Swagger and API versioning
+- [x] Swagger and API versioning for REST API
 - [x] BullMQ for queue
 - [x] Pino for logging
 - [x] Testing with Jest
@@ -15,9 +17,6 @@
 - [x] Github Actions
 - [x] Commitlint & Husky
 - [x] SWC instead of Webpack
-- [ ] Rate Limiter
-
-
 
 ## Additional Features 📦:
 
@@ -46,10 +45,10 @@ pnpm graph:circular
 
 ### 2. Database ERD 🛢️
 
-Visualize your database entities and their relationship.
+Visualize your database entities and their relationships.
 
 ```
-pnpm erd
+pnpm erd:generate
 ```
 
 <figure>
@@ -57,5 +56,9 @@ pnpm erd
 <figcaption style="text-align: center; font-style: italic;">Sample ERD</figcaption>
 </figure>
 
+Extended from [nestjs-boilerplate](https://github.com/vndevteam/nestjs-boilerplate?tab=readme-ov-file)
 
-## Made by [4SRG](https://github.com/zannunakiz)
+
+
+
+Made by [4SRG](https://github.com/zannunakiz)

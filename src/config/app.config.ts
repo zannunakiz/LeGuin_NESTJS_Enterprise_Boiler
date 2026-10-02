@@ -1,9 +1,11 @@
 import { Environment, LogService } from '@/constants/app.constant';
 import { registerAs } from '@nestjs/config';
+import { seconds } from '@nestjs/throttler';
 import {
   IsBoolean,
   IsEnum,
   IsInt,
+  IsNumber,
   IsOptional,
   IsString,
   IsUrl,
@@ -67,9 +69,17 @@ class EnvironmentVariablesValidator {
   )
   @IsOptional()
   APP_CORS_ORIGIN: string;
+
+  @IsNumber()
+  @IsOptional()
+  THROTTLE_LIMIT: number;
+
+  @IsNumber()
+  @IsOptional()
+  THROTTLE_TTL: number;
 }
 
-export function getConfig() {
+export function getConfig(): AppConfig {
   const port = process.env.APP_PORT
     ? parseInt(process.env.APP_PORT, 10)
     : process.env.PORT
@@ -87,6 +97,10 @@ export function getConfig() {
     logLevel: process.env.APP_LOG_LEVEL || 'warn',
     logService: process.env.APP_LOG_SERVICE || LogService.CONSOLE,
     corsOrigin: getCorsOrigin(),
+    throttle: {
+      limit: Number.parseInt(process.env.THROTTLE_LIMIT),
+      ttl: seconds(Number.parseInt(process.env.THROTTLE_TTL)),
+    },
   };
 }
 

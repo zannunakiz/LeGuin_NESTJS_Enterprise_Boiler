@@ -11,7 +11,7 @@ export class SessionEntity extends CreatorModel {
   })
   hash: string;
 
-  @Index()
+  @Index({ where: '"deletedAt" IS NULL' })
   @Column()
   userId: Uuid;
 
