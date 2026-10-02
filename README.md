@@ -16,6 +16,7 @@
 - [x] Pino for Logging
 - [x] Rate Limiter using Redis
 - [x] Graceful Shutdown
+- [x] File Uploads
 - [x] Testing with Jest
 - [x] pnpm
 - [x] Docker
@@ -24,6 +25,7 @@
 - [x] SWC instead of Webpack
 - [x] Dependency Graph Visualizer [Learn More](#2-dependency-graph-)
 - [x] Database Entity Relationship Diagram Generator [Learn More](#3-database-entity-relationship-diagram️)
+
 
 ### 1. Automatic API generation on the Frontend🚀
 
