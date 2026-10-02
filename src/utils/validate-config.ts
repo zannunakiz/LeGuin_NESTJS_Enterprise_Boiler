@@ -23,6 +23,7 @@ function validateConfig<T extends object>(
       )
       .join('\n');
 
+    // eslint-disable-next-line no-console
     console.error(`\n${errors.toString()}`);
     throw new Error(errorMsg);
   }

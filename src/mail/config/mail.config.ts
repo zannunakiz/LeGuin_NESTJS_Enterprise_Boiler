@@ -63,6 +63,7 @@ export function getConfig() {
 }
 
 export default registerAs<MailConfig>('mail', () => {
+  // eslint-disable-next-line no-console
   console.info(`Register MailConfig from environment variables`);
   validateConfig(process.env, EnvironmentVariablesValidator);
   return getConfig();

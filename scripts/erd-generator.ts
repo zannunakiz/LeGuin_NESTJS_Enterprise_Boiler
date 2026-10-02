@@ -11,8 +11,10 @@ const generateErd = async () => {
       indexTable: true,
     });
     await typeormMarkdown.build();
+    // eslint-disable-next-line no-console
     console.log('\n\x1b[34mDatabase ERD generated successfully.');
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('\n\x1b[31mError generating ERD:', error);
   }
 };

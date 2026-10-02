@@ -59,7 +59,6 @@ async function bootstrap() {
     allowedHeaders: 'Content-Type, Accept',
     credentials: true,
   });
-  console.info('CORS Origin:', corsOrigin);
 
   // Use global prefix if you don't have subdomain
   app.setGlobalPrefix(
@@ -99,6 +98,7 @@ async function bootstrap() {
 
   await app.listen(configService.getOrThrow('app.port', { infer: true }));
 
+  // eslint-disable-next-line no-console
   console.info(`Server running on ${await app.getUrl()}`);
 
   return app;

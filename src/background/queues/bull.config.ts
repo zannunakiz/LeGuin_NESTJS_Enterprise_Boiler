@@ -37,6 +37,7 @@ export function getConfig() {
 }
 
 export default registerAs<BullConfig>('queue', () => {
+  // eslint-disable-next-line no-console
   console.info(`Register BullConfig from environment variables`);
   validateConfig(process.env, EnvironmentVariablesValidator);
   return getConfig();

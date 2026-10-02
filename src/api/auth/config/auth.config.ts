@@ -56,6 +56,7 @@ export function getConfig() {
 }
 
 export default registerAs<AuthConfig>('auth', () => {
+  // eslint-disable-next-line no-console
   console.info(`Register AuthConfig from environment variables`);
   validateConfig(process.env, EnvironmentVariablesValidator);
   return getConfig();

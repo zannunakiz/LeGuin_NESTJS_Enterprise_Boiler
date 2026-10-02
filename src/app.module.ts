@@ -48,6 +48,7 @@ import { default as useThrottlerFactory } from './tools/throttler/throttler.fact
     }),
     GracefulShutdownModule.forRoot({
       cleanup: (...args) => {
+        // eslint-disable-next-line no-console
         console.log('App shutting down...', args);
       },
     }),

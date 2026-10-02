@@ -115,6 +115,7 @@ export function getConfig(): DatabaseConfig {
 }
 
 export default registerAs<DatabaseConfig>('database', () => {
+  // eslint-disable-next-line no-console
   console.info(`Register DatabaseConfig from environment variables`);
   validateConfig(process.env, EnvironmentVariablesValidator);
   return getConfig();
