@@ -36,4 +36,6 @@ pnpm graph:circular
 
 <img src="./github-assets/graph.png">
 
-- Made by 4SRG
+
+
+## Made by [4SRG](https://github.com/zannunakiz)
