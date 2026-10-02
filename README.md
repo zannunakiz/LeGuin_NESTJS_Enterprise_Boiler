@@ -18,9 +18,14 @@
 - [ ] Rate Limiter
 
 
-### Dependency Graph
 
-Make sure [Graphviz](https://www.graphviz.org/) is installed first.
+## Additional Features 📦:
+
+### 1. Dependency Graph 📈
+
+Visualize all of your project modules and their dependencies. Also, detect circular dependencies.
+
+NOTE: Make sure [Graphviz](https://www.graphviz.org/) is installed first.
 
 - All dependencies:
 
@@ -34,8 +39,23 @@ pnpm graph:app
 pnpm graph:circular
 ```
 
-<img src="./github-assets/graph.png">
+<figure>
+<img src="./github-assets/graph.png" style="border: 5px solid teal" />
+<figcaption style="text-align: center; font-style: italic;">Sample Graph</figcaption>
+</figure>
 
+### 2. Database ERD 🛢️
+
+Visualize your database entities and their relationship.
+
+```
+pnpm erd
+```
+
+<figure>
+<img src="./github-assets/erd.png" style="border: 5px solid teal; height: 1080px;" />
+<figcaption style="text-align: center; font-style: italic;">Sample ERD</figcaption>
+</figure>
 
 
 ## Made by [4SRG](https://github.com/zannunakiz)

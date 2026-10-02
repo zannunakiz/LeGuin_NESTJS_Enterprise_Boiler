@@ -30,7 +30,8 @@
     "seed:create": "env-cmd ts-node ./node_modules/typeorm-extension/bin/cli.cjs seed:create",
     "prepare": "husky || true",
     "graph:app": "madge ./src/main.ts --image ./.tmp/graph.png",
-    "graph:circular": "madge --circular ./src/main.ts --image ./.tmp/circular.png"
+    "graph:circular": "madge --circular ./src/main.ts --image ./.tmp/circular.png",
+    "erd": "ts-node ./scripts/erd-generator.ts"
   },
   "dependencies": {
     "@apollo/server": "^4.11.2",
@@ -59,6 +60,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "compression": "^1.7.4",
+    "dotenv": "^16.4.5",
     "fastify": "^4.28.1",
     "graphql": "^16.9.0",
     "handlebars": "^4.7.8",
@@ -111,6 +113,7 @@
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "typeorm-markdown-generator": "^1.0.5",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.8.1"
   },
