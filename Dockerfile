@@ -2,8 +2,6 @@ FROM node:20-alpine AS base
 
 RUN npm install -g pnpm@9.12.2
 
-RUN npm install -g pm2
-
 # BUILD FOR LOCAL DEVELOPMENT
 FROM base AS development
 WORKDIR /app
@@ -32,7 +30,12 @@ COPY --chown=node:node --from=development /app/tsconfig.json ./tsconfig.json
 COPY --chown=node:node --from=development /app/tsconfig.build.json ./tsconfig.build.json
 COPY --chown=node:node --from=development /app/nest-cli.json ./nest-cli.json
 
+# Build server
 RUN pnpm build
+
+# Run migrations & seeds
+RUN pnpm migration:up
+RUN pnpm seed:run
 
 # Removes unnecessary packages and re-install only production dependencies
 ENV NODE_ENV production
@@ -46,6 +49,8 @@ USER node
 FROM node:20-alpine AS production
 WORKDIR /app
 
+RUN npm install -g pm2
+
 RUN chown -R node:node /app
 
 # Copy the bundled code from the build stage to the production image
@@ -53,5 +58,8 @@ COPY --chown=node:node --from=builder /app/src/generated/* ./src/generated/
 COPY --chown=node:node --from=builder /app/node_modules ./node_modules
 COPY --chown=node:node --from=builder /app/dist ./dist
 COPY --chown=node:node --from=builder /app/package.json ./
+COPY --chown=node:node --from=development /app/pm2.config.json ./
 
 USER node
+
+CMD ["pm2-runtime", "start", "pm2.config.json"]
