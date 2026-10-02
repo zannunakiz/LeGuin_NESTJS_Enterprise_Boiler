@@ -3,11 +3,23 @@ import { OffsetPaginatedDto } from '@/common/dto/offset-pagination/paginated.dto
 import { Uuid } from '@/common/types/common.type';
 import { CurrentUser } from '@/decorators/current-user.decorator';
 import { ApiAuth } from '@/decorators/http.decorators';
-import { Body, Controller, Get, HttpStatus, Post, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { CreateUserReqDto } from './dto/create-user.req.dto';
 import { ListUserReqDto } from './dto/list-user.req.dto';
 import { LoadMoreUsersReqDto } from './dto/load-more-users.req.dto';
+import { UpdateUserReqDto } from './dto/update-user.req.dto';
 import { UserResDto } from './dto/user.res.dto';
 import { UserService } from './user.service';
 
@@ -63,5 +75,38 @@ export class UserController {
     @Query() reqDto: LoadMoreUsersReqDto,
   ): Promise<CursorPaginatedDto<UserResDto>> {
     return await this.userService.loadMoreUsers(reqDto);
+  }
+
+  @Get(':id')
+  @ApiAuth({ type: UserResDto, summary: 'Find user by id' })
+  @ApiParam({ name: 'id', type: 'String' })
+  async findUser(@Param('id', ParseUUIDPipe) id: Uuid): Promise<UserResDto> {
+    return await this.userService.findOne(id);
+  }
+
+  @Patch(':id')
+  @ApiAuth({ type: UserResDto, summary: 'Update user' })
+  @ApiParam({ name: 'id', type: 'String' })
+  updateUser(
+    @Param('id', ParseUUIDPipe) id: Uuid,
+    @Body() reqDto: UpdateUserReqDto,
+  ) {
+    return this.userService.update(id, reqDto);
+  }
+
+  @Delete(':id')
+  @ApiAuth({
+    summary: 'Delete user',
+    errorResponses: [400, 401, 403, 404, 500],
+  })
+  @ApiParam({ name: 'id', type: 'String' })
+  removeUser(@Param('id', ParseUUIDPipe) id: Uuid) {
+    return this.userService.remove(id);
+  }
+
+  @ApiAuth()
+  @Post('me/change-password')
+  async changePassword() {
+    return 'change-password';
   }
 }

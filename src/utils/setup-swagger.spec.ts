@@ -1,5 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { SwaggerModule } from '@nestjs/swagger';
 import { Test, TestingModule } from '@nestjs/testing';
 import setupSwagger from './setup-swagger';
@@ -23,7 +24,7 @@ describe('setupSwagger', () => {
       ],
     }).compile();
 
-    app = moduleRef.createNestApplication();
+    app = moduleRef.createNestApplication(new FastifyAdapter());
     configService = moduleRef.get<ConfigService>(ConfigService);
     jest.spyOn(app, 'get').mockImplementation((service) => {
       if (service === ConfigService) return configService;
@@ -55,6 +56,7 @@ describe('setupSwagger', () => {
     setupSwagger(app);
     expect(setupSpy).toHaveBeenCalledWith('api-docs', app, expect.any(Object), {
       customSiteTitle: 'TestApp',
+      jsonDocumentUrl: 'swagger/json',
     });
   });
 });
