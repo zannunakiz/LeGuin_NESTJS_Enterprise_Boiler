@@ -1,6 +1,7 @@
 import {
   EmailField,
   PasswordField,
+  StringFieldOptional,
   UsernameField,
 } from '@/decorators/field.decorators';
 
@@ -13,4 +14,7 @@ export class CreateUserDto {
 
   @PasswordField()
   password: string;
+
+  @StringFieldOptional()
+  bio?: string;
 }

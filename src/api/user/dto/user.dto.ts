@@ -1,4 +1,8 @@
-import { ClassField, StringField } from '@/decorators/field.decorators';
+import {
+  ClassField,
+  StringField,
+  StringFieldOptional,
+} from '@/decorators/field.decorators';
 import { Exclude, Expose } from 'class-transformer';
 
 @Exclude()
@@ -22,4 +26,8 @@ export class UserDto {
   @ClassField(() => Date)
   @Expose()
   updatedAt: Date;
+
+  @Expose()
+  @StringFieldOptional()
+  bio?: string;
 }

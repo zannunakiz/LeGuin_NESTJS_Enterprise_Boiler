@@ -424,6 +424,7 @@ export function UsernameField(
         'Invalid username. Make sure username do not have any whitespace and any special symbols except underscore(`_`) and period(`.`).',
     }),
     MaxLength(30),
+    MinLength(3),
     StringField({ toLowerCase: true, ...options }),
   ];
 
