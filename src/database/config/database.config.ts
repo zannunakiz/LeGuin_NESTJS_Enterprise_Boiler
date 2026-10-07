@@ -97,16 +97,10 @@ export function getConfig(): DatabaseConfig {
     entities: [__dirname + '/../../**/entities/*.entity{.ts,.js}'],
     migrations: [__dirname + '/../migrations/**/*{.ts,.js}'],
     migrationsTableName: 'migrations',
+    seeds: [__dirname + '/../seeds/**/*{.ts,.js}'],
+    seedTracking: true,
+    seedTableName: 'seeders',
     useUTC: true,
-  };
-}
-
-export function getSeedConfig(): DatabaseConfig {
-  const config = getConfig();
-  return {
-    ...config,
-    migrations: [__dirname + '/../seeds/**/*{.ts,.js}'],
-    migrationsTableName: 'seeders',
   };
 }
 
