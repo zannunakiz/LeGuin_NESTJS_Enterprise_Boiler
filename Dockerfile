@@ -29,6 +29,7 @@ COPY --chown=node:node --from=development /app/src ./src
 COPY --chown=node:node --from=development /app/tsconfig.json ./tsconfig.json
 COPY --chown=node:node --from=development /app/tsconfig.build.json ./tsconfig.build.json
 COPY --chown=node:node --from=development /app/nest-cli.json ./nest-cli.json
+COPY --chown=node:node --from=development /app/.env ./.env
 
 # Build server
 RUN pnpm build
@@ -54,7 +55,6 @@ RUN npm install -g pm2
 RUN chown -R node:node /app
 
 # Copy the bundled code from the build stage to the production image
-COPY --chown=node:node --from=builder /app/src/generated/* ./src/generated/
 COPY --chown=node:node --from=builder /app/node_modules ./node_modules
 COPY --chown=node:node --from=builder /app/dist ./dist
 COPY --chown=node:node --from=builder /app/package.json ./

@@ -1,3 +1,5 @@
+set -e
+
 cd "$(dirname "$(realpath "$0")")" || exit
 cd ..
 
