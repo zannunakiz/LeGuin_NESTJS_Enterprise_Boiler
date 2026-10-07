@@ -20,13 +20,12 @@ services:
     container_name: nestjs-boilerplate-postgres
     restart: always
     environment:
-      POSTGRES_USER: '${DATABASE_USERNAME}'
-      POSTGRES_PASSWORD: '${DATABASE_PASSWORD}'
-      POSTGRES_DB: '${DATABASE_NAME}'
-      POSTGRES_HOST_AUTH_METHOD: trust
-      TZ: 'UTC'
+      POSTGRES_USER: "${DATABASE_USERNAME}"
+      POSTGRES_PASSWORD: "${DATABASE_PASSWORD}"
+      POSTGRES_DB: "${DATABASE_NAME}"
+      TZ: "UTC"
     ports:
-      - '${DOCKER_DATABASE_PORT}:5432'
+      - "${DOCKER_DATABASE_PORT}:5432"
     volumes:
       - ./.docker/postgres_data:/var/lib/postgresql/data
     networks:
