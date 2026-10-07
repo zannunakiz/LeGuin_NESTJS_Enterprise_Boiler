@@ -1,12 +1,10 @@
 import { Environment, LogService } from '@/constants/app.constant';
 import { registerAs } from '@nestjs/config';
-import { seconds } from '@nestjs/throttler';
 import {
   IsBoolean,
   IsEnum,
   IsInt,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   IsUrl,
@@ -28,6 +26,10 @@ class EnvironmentVariablesValidator {
   @IsOptional()
   IS_HTTPS: boolean;
 
+  @IsBoolean()
+  @IsOptional()
+  IS_WORKER: boolean;
+
   @IsString()
   @IsNotEmpty()
   APP_NAME: string;
@@ -46,7 +48,7 @@ class EnvironmentVariablesValidator {
   @Min(0)
   @Max(65535)
   @IsOptional()
-  WEBSOCKET_PORT: number;
+  APP_WEBSOCKET_PORT: number;
 
   @IsInt()
   @Min(0)
@@ -85,31 +87,25 @@ class EnvironmentVariablesValidator {
   )
   @IsOptional()
   APP_CORS_ORIGIN: string;
-
-  @IsNumber()
-  @IsOptional()
-  THROTTLE_LIMIT: number;
-
-  @IsNumber()
-  @IsOptional()
-  THROTTLE_TTL: number;
 }
 
 export function getConfig(): AppConfig {
   const port = parseInt(process.env.APP_PORT, 10);
 
-  const websocketPort = process.env.WEBSOCKET_PORT
-    ? parseInt(process.env.WEBSOCKET_PORT, 10)
+  const websocketPort = process.env.APP_WEBSOCKET_PORT
+    ? Number.parseInt(process.env.APP_WEBSOCKET_PORT, 10)
     : port - 1;
 
   return {
     nodeEnv: (process.env.NODE_ENV || Environment.DEVELOPMENT) as Environment,
     isHttps: process.env.IS_HTTPS === 'true',
+    isWorker: process.env.IS_WORKER === 'true',
     name: process.env.APP_NAME,
     appPrefix: kebabCase(process.env.APP_NAME),
     url: process.env.APP_URL || `http://localhost:${port}`,
     port,
     websocketPort,
+    workerPort: Number.parseInt(process.env.APP_WORKER_PORT, 10),
     debug: process.env.APP_DEBUG === 'true',
     apiPrefix: process.env.API_PREFIX || 'api',
     fallbackLanguage: process.env.APP_FALLBACK_LANGUAGE || 'en',
@@ -117,10 +113,6 @@ export function getConfig(): AppConfig {
     logLevel: process.env.APP_LOG_LEVEL || 'warn',
     logService: process.env.APP_LOG_SERVICE || LogService.CONSOLE,
     corsOrigin: getCorsOrigin(),
-    throttle: {
-      limit: Number.parseInt(process.env.THROTTLE_LIMIT),
-      ttl: seconds(Number.parseInt(process.env.THROTTLE_TTL)),
-    },
   };
 }
 

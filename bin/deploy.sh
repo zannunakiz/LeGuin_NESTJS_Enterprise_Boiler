@@ -9,3 +9,4 @@ docker build --tag nestjs-boilerplate-prod:latest . --no-cache
 pnpm docker:prod:down
 pnpm docker:prod:up
 docker volume prune -f
+docker image prune -f

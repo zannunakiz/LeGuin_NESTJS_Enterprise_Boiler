@@ -43,10 +43,6 @@ class EnvironmentVariablesValidator {
   @IsOptional()
   DATABASE_LOGGING: boolean;
 
-  @IsBoolean()
-  @IsOptional()
-  DATABASE_SYNCHRONIZE: boolean;
-
   @IsInt()
   @IsPositive()
   @IsOptional()
@@ -54,7 +50,7 @@ class EnvironmentVariablesValidator {
 
   @IsBoolean()
   @IsOptional()
-  DATABASE_SSL_ENABLED: boolean;
+  DATABASE_SSL: boolean;
 
   @IsBoolean()
   @IsOptional()
@@ -84,16 +80,12 @@ export function getConfig(): DatabaseConfig {
     database: process.env.DATABASE_NAME,
     username: process.env.DATABASE_USERNAME,
     logging: process.env.DATABASE_LOGGING === 'true',
-    synchronize: Boolean(
-      process.env.NODE_ENV === 'development' &&
-        process.env.DATABASE_SYNCHRONIZE === 'true',
-    ),
     dropSchema: false,
     poolSize: process.env.DATABASE_MAX_CONNECTIONS
       ? parseInt(process.env.DATABASE_MAX_CONNECTIONS, 10)
       : 100,
     ssl:
-      process.env.DATABASE_SSL_ENABLED === 'true'
+      process.env.DATABASE_SSL === 'true'
         ? {
             rejectUnauthorized:
               process.env.DATABASE_REJECT_UNAUTHORIZED === 'true',
@@ -107,6 +99,8 @@ export function getConfig(): DatabaseConfig {
     migrationsTableName: 'migrations',
     seeds: [__dirname + '/../seeds/**/*{.ts,.js}'],
     seedTracking: true,
+    seedTableName: 'seeders',
+    useUTC: true,
   };
 }
 

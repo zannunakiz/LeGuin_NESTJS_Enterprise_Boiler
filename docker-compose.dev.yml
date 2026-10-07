@@ -1,7 +1,5 @@
 services:
   server:
-    container_name: nestjs-boilerplate-dev
-    image: nestjs-boilerplate-dev:latest
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -13,7 +11,20 @@ services:
       - redis
       - mail
     command: >
-      sh -c "npx pnpm start:dev -y"
+      sh -c "pnpm start:dev"
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+      - .:/app
+    depends_on:
+      - database
+      - redis
+    command: >
+      sh -c "pnpm start:dev"
 
   database:
     image: postgres:16
@@ -23,28 +34,11 @@ services:
       POSTGRES_USER: '${DATABASE_USERNAME}'
       POSTGRES_PASSWORD: '${DATABASE_PASSWORD}'
       POSTGRES_DB: '${DATABASE_NAME}'
-      POSTGRES_HOST_AUTH_METHOD: trust
       TZ: 'UTC'
     ports:
       - '${DOCKER_DATABASE_PORT}:5432'
     volumes:
       - ./.docker/postgres_data:/var/lib/postgresql/data
-    networks:
-      - nestjs-boilerplate-network
-
-  redis:
-    image: redis:7.0.1-alpine
-    container_name: nestjs-boilerplate-redis
-    restart: always
-    environment:
-      REDIS_ARGS: '--requirepass ${REDIS_PASSWORD}'
-    ports:
-      - '${DOCKER_REDIS_PORT}:6379'
-    volumes:
-      - ./.docker/redis_data:/data
-    healthcheck:
-      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
-    command: 'redis-server --save 120 1 --loglevel warning'
     networks:
       - nestjs-boilerplate-network
 

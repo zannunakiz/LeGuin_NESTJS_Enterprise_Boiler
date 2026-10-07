@@ -7,8 +7,8 @@ async function useThrottlerFactory(config: ConfigService<AllConfigType>) {
   return {
     throttlers: [
       {
-        ttl: config.getOrThrow('app.throttle.ttl', { infer: true }),
-        limit: config.getOrThrow('app.throttle.limit', { infer: true }),
+        ttl: config.getOrThrow('throttler.ttl', { infer: true }),
+        limit: config.getOrThrow('throttler.limit', { infer: true }),
       },
     ],
     storage: new ThrottlerStorageRedisService(

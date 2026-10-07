@@ -29,7 +29,7 @@ class EnvironmentVariablesValidator {
 
   @IsBoolean()
   @IsOptional()
-  REDIS_TLS_ENABLED: boolean;
+  REDIS_TLS: boolean;
 }
 
 export function getConfig() {
@@ -37,7 +37,7 @@ export function getConfig() {
     host: process.env.REDIS_HOST,
     port: parseInt(process.env.REDIS_PORT, 10),
     password: process.env.REDIS_PASSWORD,
-    tlsEnabled: process.env.REDIS_TLS_ENABLED === 'true',
+    tlsEnabled: process.env.REDIS_TLS === 'true',
   };
 }
 

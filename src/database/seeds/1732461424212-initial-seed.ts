@@ -4,7 +4,7 @@ import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
 
 export class InitialSeed1732461424212 implements Seeder {
-  track = false;
+  track = true;
 
   public async run(
     dataSource: DataSource,

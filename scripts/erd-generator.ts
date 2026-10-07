@@ -1,10 +1,10 @@
 import 'dotenv/config';
 import { TypeormMarkdownGenerator } from 'typeorm-markdown-generator';
-import { AppDataSource } from '../src/database/data-source';
+import DataSource from '../src/database/data-source';
 
 const generateErd = async () => {
   try {
-    const typeormMarkdown = new TypeormMarkdownGenerator(AppDataSource, {
+    const typeormMarkdown = new TypeormMarkdownGenerator(DataSource, {
       entityPath: 'src/**/*.entity.ts',
       title: 'Postgres ERD',
       outFilePath: '.tmp/erd.md',

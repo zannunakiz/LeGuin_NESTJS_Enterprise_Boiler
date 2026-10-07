@@ -1,4 +1,4 @@
-import { IEmailJob, IVerifyEmailJob } from '@/common/interfaces/job.interface';
+import { IVerifyEmailJob } from '@/common/interfaces/job.interface';
 import { Branded } from '@/common/types/types';
 import { AllConfigType } from '@/config/config.type';
 import { CacheKey } from '@/constants/cache.constant';
@@ -58,7 +58,7 @@ export class AuthService {
     @InjectRepository(SessionEntity)
     private readonly sessionRepository: Repository<SessionEntity>,
     @InjectQueue(QueueName.EMAIL)
-    private readonly emailQueue: Queue<IEmailJob, any, string>,
+    private readonly emailQueue: Queue<IVerifyEmailJob, any, string>,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
@@ -104,7 +104,7 @@ export class AuthService {
   }
 
   async register(dto: RegisterReqDto): Promise<RegisterResDto> {
-    const userExists = await UserEntity.exists({
+    const userExists = await this.userRepository.exists({
       where: { email: dto.email },
     });
 
@@ -120,7 +120,7 @@ export class AuthService {
       password: dto.password,
     });
 
-    await user.save();
+    await user.save({ transaction: false });
 
     const token = await this._createVerificationToken({ id: user.id });
     const tokenExpiresIn = this.configService.getOrThrow(
@@ -137,7 +137,7 @@ export class AuthService {
     await this.emailQueue.add(JobName.EMAIL_VERIFICATION, {
       email: dto.email,
       token,
-    } as IVerifyEmailJob);
+    });
 
     return plainToInstance(RegisterResDto, {
       userId: user.id,

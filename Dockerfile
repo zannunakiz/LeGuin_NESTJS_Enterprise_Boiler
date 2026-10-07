@@ -1,8 +1,12 @@
-FROM node:20-alpine AS base
+ARG NODE_IMAGE=node:20-slim
+
+FROM ${NODE_IMAGE} AS base
+
+RUN apt-get update && apt-get install -y procps
 
 RUN npm install -g pnpm@9.12.2
 
-# BUILD FOR LOCAL DEVELOPMENT
+# Development stage
 FROM base AS development
 WORKDIR /app
 RUN chown -R node:node /app
@@ -19,7 +23,7 @@ COPY --chown=node:node . .
 # Use the node user from the image (instead of the root user)
 USER node
 
-# BUILD BUILDER IMAGE
+# Build stage
 FROM base AS builder
 WORKDIR /app
 
@@ -46,8 +50,8 @@ RUN pnpm install --frozen-lockfile --prod
 
 USER node
 
-# BUILD FOR PRODUCTION
-FROM node:20-alpine AS production
+# Production stage
+FROM ${NODE_IMAGE} AS production
 WORKDIR /app
 
 RUN npm install -g pm2
