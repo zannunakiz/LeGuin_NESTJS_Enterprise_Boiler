@@ -37,7 +37,7 @@ async function bootstrap() {
   const appConfig = getConfig();
 
   const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
+    AppModule.worker(),
     new FastifyAdapter({
       logger: appConfig.appLogging ? envToLogger[appConfig.nodeEnv] : false,
       trustProxy: appConfig.isHttps,

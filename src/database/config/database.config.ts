@@ -10,6 +10,7 @@ import {
   Min,
   ValidateIf,
 } from 'class-validator';
+import { PostgresDriver } from 'typeorm/driver/postgres/PostgresDriver';
 import { DatabaseConfig } from './database-config.type';
 
 class EnvironmentVariablesValidator {
@@ -107,6 +108,7 @@ export function getConfig(): DatabaseConfig {
     migrationsTableName: 'migrations',
     seeds: [__dirname + '/../seeds/**/*{.ts,.js}'],
     seedTracking: true,
+    useUTC: true,
   };
 }
 

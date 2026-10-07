@@ -22,7 +22,7 @@ class DatabaseLogger implements TypeOrmLogger {
   /**
    * Logs query and parameters used in it.
    */
-  logQuery(query: string, parameters?: any[], queryRunner?: QueryRunner) {
+  logQuery(query: string, parameters?: any[]) {
     if (!this.isLogEnabledFor('query')) {
       return;
     }
@@ -38,12 +38,7 @@ class DatabaseLogger implements TypeOrmLogger {
   /**
    * Logs query that is failed.
    */
-  logQueryError(
-    error: string,
-    query: string,
-    parameters?: any[],
-    queryRunner?: QueryRunner,
-  ) {
+  logQueryError(error: string, query: string, parameters?: any[]) {
     if (!this.isLogEnabledFor('query-error')) {
       return;
     }
@@ -60,12 +55,7 @@ class DatabaseLogger implements TypeOrmLogger {
   /**
    * Logs query that is slow.
    */
-  logQuerySlow(
-    time: number,
-    query: string,
-    parameters?: any[],
-    queryRunner?: QueryRunner,
-  ) {
+  logQuerySlow(time: number, query: string, parameters?: any[]) {
     if (!this.isLogEnabledFor('query-slow')) {
       return;
     }

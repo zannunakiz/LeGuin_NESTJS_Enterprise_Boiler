@@ -1,7 +1,4 @@
-export interface IEmailJob {
-  email: string;
-}
-
-export interface IVerifyEmailJob extends IEmailJob {
+export interface IVerifyEmailJob {
   token: string;
+  email: string;
 }

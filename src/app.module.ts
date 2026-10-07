@@ -6,7 +6,7 @@ import redisConfig from '@/redis/redis.config';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { BullModule } from '@nestjs/bullmq';
 import { CacheModule } from '@nestjs/cache-manager';
-import { Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
@@ -34,78 +34,97 @@ import { default as useLoggerFactory } from './tools/logger/logger-factory';
 import sentryConfig from './tools/sentry/sentry.config';
 import { default as useThrottlerFactory } from './tools/throttler/throttler.factory';
 
-@Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      load: [
-        appConfig,
-        databaseConfig,
-        redisConfig,
-        authConfig,
-        mailConfig,
-        bullConfig,
-        sentryConfig,
+@Module({})
+export class AppModule {
+  private static common(): DynamicModule {
+    return {
+      module: AppModule,
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          load: [
+            appConfig,
+            databaseConfig,
+            redisConfig,
+            authConfig,
+            mailConfig,
+            bullConfig,
+            sentryConfig,
+          ],
+          envFilePath: ['.env'],
+        }),
+        GracefulShutdownModule.forRoot({
+          cleanup: (...args) => {
+            // eslint-disable-next-line no-console
+            console.log('App shutting down...', args);
+          },
+        }),
+        LoggerModule.forRootAsync({
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory: useLoggerFactory,
+        }),
+        CacheModule.registerAsync({
+          isGlobal: true,
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory: useCacheFactory,
+        }),
+        TypeOrmModule.forRootAsync({
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory: databaseConfig,
+        }),
+        BullModule.forRootAsync({
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory: useBullFactory,
+        }),
+        MailModule,
       ],
-      envFilePath: ['.env'],
-    }),
-    GracefulShutdownModule.forRoot({
-      cleanup: (...args) => {
-        // eslint-disable-next-line no-console
-        console.log('App shutting down...', args);
-      },
-    }),
-    LoggerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: useLoggerFactory,
-    }),
-    CacheModule.registerAsync({
-      isGlobal: true,
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: useCacheFactory,
-    }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: databaseConfig,
-    }),
-    BullModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: useBullFactory,
-    }),
-    I18nModule.forRootAsync({
-      resolvers: [
-        { use: QueryResolver, options: ['lang'] },
-        AcceptLanguageResolver,
-        new HeaderResolver(['x-lang']),
+    };
+  }
+  static main(): DynamicModule {
+    return {
+      module: AppModule,
+      imports: [
+        ...AppModule.common().imports,
+        I18nModule.forRootAsync({
+          resolvers: [
+            { use: QueryResolver, options: ['lang'] },
+            AcceptLanguageResolver,
+            new HeaderResolver(['x-lang']),
+          ],
+          inject: [ConfigService],
+          useFactory: useI18nFactory,
+        }),
+        GraphQLModule.forRootAsync<ApolloDriverConfig>({
+          driver: ApolloDriver,
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory: useGraphqlFactory,
+        }),
+        ThrottlerModule.forRootAsync({
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory: useThrottlerFactory,
+        }),
+        GatewayModule,
+        ApiModule,
       ],
-      inject: [ConfigService],
-      useFactory: useI18nFactory,
-    }),
-    GraphQLModule.forRootAsync<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: useGraphqlFactory,
-    }),
-    ThrottlerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: useThrottlerFactory,
-    }),
-    BackgroundModule,
-    MailModule,
-    GatewayModule,
-    ApiModule,
-  ],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
-  ],
-})
-export class AppModule {}
+      providers: [
+        {
+          provide: APP_GUARD,
+          useClass: ThrottlerGuard,
+        },
+      ],
+    };
+  }
+
+  static worker(): DynamicModule {
+    return {
+      module: AppModule,
+      imports: [...AppModule.common().imports, BackgroundModule],
+    };
+  }
+}

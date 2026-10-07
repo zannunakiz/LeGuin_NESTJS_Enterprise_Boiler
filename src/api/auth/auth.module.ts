@@ -14,11 +14,6 @@ import { SessionEntity } from './entities/session.entity';
     JwtModule.register({}),
     BullModule.registerQueue({
       name: QueueName.EMAIL,
-      streams: {
-        events: {
-          maxLen: 1000,
-        },
-      },
     }),
   ],
   controllers: [AuthController],
