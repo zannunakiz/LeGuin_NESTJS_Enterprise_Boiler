@@ -1,12 +1,10 @@
 import { Environment, LogService } from '@/constants/app.constant';
 import { registerAs } from '@nestjs/config';
-import { seconds } from '@nestjs/throttler';
 import {
   IsBoolean,
   IsEnum,
   IsInt,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   IsUrl,
@@ -27,6 +25,10 @@ class EnvironmentVariablesValidator {
   @IsBoolean()
   @IsOptional()
   IS_HTTPS: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  IS_WORKER: boolean;
 
   @IsString()
   @IsNotEmpty()
@@ -85,14 +87,6 @@ class EnvironmentVariablesValidator {
   )
   @IsOptional()
   APP_CORS_ORIGIN: string;
-
-  @IsNumber()
-  @IsOptional()
-  THROTTLER_LIMIT: number;
-
-  @IsNumber()
-  @IsOptional()
-  THROTTLER_TTL: number;
 }
 
 export function getConfig(): AppConfig {
@@ -105,6 +99,7 @@ export function getConfig(): AppConfig {
   return {
     nodeEnv: (process.env.NODE_ENV || Environment.DEVELOPMENT) as Environment,
     isHttps: process.env.IS_HTTPS === 'true',
+    isWorker: process.env.IS_WORKER === 'true',
     name: process.env.APP_NAME,
     appPrefix: kebabCase(process.env.APP_NAME),
     url: process.env.APP_URL || `http://localhost:${port}`,
@@ -117,10 +112,6 @@ export function getConfig(): AppConfig {
     logLevel: process.env.APP_LOG_LEVEL || 'warn',
     logService: process.env.APP_LOG_SERVICE || LogService.CONSOLE,
     corsOrigin: getCorsOrigin(),
-    throttle: {
-      limit: Number.parseInt(process.env.THROTTLER_LIMIT),
-      ttl: seconds(Number.parseInt(process.env.THROTTLER_TTL)),
-    },
   };
 }
 

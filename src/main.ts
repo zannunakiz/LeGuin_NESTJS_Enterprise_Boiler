@@ -17,7 +17,7 @@ import helmet from 'helmet';
 import { setupGracefulShutdown } from 'nestjs-graceful-shutdown';
 
 import { AppModule } from './app.module';
-import { getConfig } from './config/app.config';
+import { getConfig as getAppConfig } from './config/app.config';
 import { type AllConfigType } from './config/config.type';
 import { Environment } from './constants/app.constant';
 import { WebSocketAdapter } from './shared/gateway/websocket.adapter';
@@ -34,10 +34,12 @@ async function bootstrap() {
     test: false,
   } as const;
 
-  const appConfig = getConfig();
+  const appConfig = getAppConfig();
+
+  const isWorker = appConfig.isWorker;
 
   const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule.worker(),
+    isWorker ? AppModule.worker() : AppModule.main(),
     new FastifyAdapter({
       logger: appConfig.appLogging ? envToLogger[appConfig.nodeEnv] : false,
       trustProxy: appConfig.isHttps,
@@ -93,7 +95,9 @@ async function bootstrap() {
     setupGracefulShutdown({ app });
   }
 
-  app.useWebSocketAdapter(new WebSocketAdapter(app, configService));
+  if (!isWorker) {
+    app.useWebSocketAdapter(new WebSocketAdapter(app, configService));
+  }
 
   await app.listen(
     configService.getOrThrow('app.port', { infer: true }),
@@ -108,9 +112,13 @@ async function bootstrap() {
       `:${configService.get('app.websocketPort', { infer: true })}`,
     );
   // eslint-disable-next-line no-console
-  console.info(`Server running at ${httpUrl}`);
-  // eslint-disable-next-line no-console
-  console.info(`Websocket server running at ${wsUrl}`);
+  console.info(
+    `\x1b[3${isWorker ? '3' : '4'}m${isWorker ? 'Worker ' : ''}Server running at ${httpUrl}`,
+  );
+  if (!isWorker) {
+    // eslint-disable-next-line no-console
+    console.info(`\x1b[34mWebsocket server running at ${wsUrl}`);
+  }
 
   return app;
 }
