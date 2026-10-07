@@ -2,7 +2,7 @@ FROM node:20-alpine AS base
 
 RUN npm install -g pnpm@9.12.2
 
-# BUILD FOR LOCAL DEVELOPMENT
+# Development stage
 FROM base AS development
 WORKDIR /app
 RUN chown -R node:node /app
@@ -19,7 +19,7 @@ COPY --chown=node:node . .
 # Use the node user from the image (instead of the root user)
 USER node
 
-# BUILD BUILDER IMAGE
+# Build stage
 FROM base AS builder
 WORKDIR /app
 
@@ -46,7 +46,7 @@ RUN pnpm install --frozen-lockfile --prod
 
 USER node
 
-# BUILD FOR PRODUCTION
+# Production stage
 FROM node:20-alpine AS production
 WORKDIR /app
 

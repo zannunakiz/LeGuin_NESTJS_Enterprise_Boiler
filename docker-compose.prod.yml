@@ -5,5 +5,3 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: >
-      sh -c "npx pnpm start:prod -y"

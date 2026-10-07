@@ -32,22 +32,6 @@ services:
     networks:
       - nestjs-boilerplate-network
 
-  redis:
-    image: redis:7.0.1-alpine
-    container_name: nestjs-boilerplate-redis
-    restart: always
-    environment:
-      REDIS_ARGS: '--requirepass ${REDIS_PASSWORD}'
-    ports:
-      - '${DOCKER_REDIS_PORT}:6379'
-    volumes:
-      - ./.docker/redis_data:/data
-    healthcheck:
-      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
-    command: 'redis-server --save 120 1 --loglevel warning'
-    networks:
-      - nestjs-boilerplate-network
-
   mail:
     image: nestjs-boilerplate-mail:latest
     container_name: nestjs-boilerplate-mail
