@@ -71,4 +71,37 @@ pnpm erd:generate
 </figure>
 
 
+### 4. Docker
+
+##### For local development:
+
+- Start container:
+
+```
+pnpm docker:dev:up
+```
+
+- View Logs:
+
+```
+docker logs -f nestjs-boilerplate-dev
+```
+
+- Stop container:
+
+```
+pnpm docker:dev:down
+```
+
+##### For prod deployment:
+
+```
+sh ./bin/deploy.sh
+```
+
+or run workflow `.github/workflows/main.yml` via GitHub Actions.
+
+
+
+### Cred
 Made by [4SRG](https://github.com/zannunakiz)
