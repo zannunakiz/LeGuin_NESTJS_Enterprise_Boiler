@@ -12,7 +12,7 @@ class EnvironmentVariablesValidator {
 
   @IsBoolean()
   @IsOptional()
-  REMOVE_QUEUE_ON_COMPLETE: boolean;
+  QUEUE_REMOVE_ON_COMPLETE: boolean;
 
   @IsNumber()
   @IsOptional()
@@ -32,10 +32,10 @@ export function getConfig() {
     prefix: `${kebabCase(process.env.APP_NAME)}-queue`,
     redis: redisConfig() as RedisConfig,
     defaultJobOptions: {
-      removeOnComplete: process.env.REMOVE_ON_COMPLETE === 'true',
-      removeOnFail: process.env.REMOVE_ON_FAIL === 'true',
-      attempts: process.env.FAILED_RETRY_ATTEMPTS
-        ? Number.parseInt(process.env.FAILED_RETRY_ATTEMPTS)
+      removeOnComplete: process.env.QUEUE_REMOVE_ON_COMPLETE === 'true',
+      removeOnFail: process.env.QUEUE_REMOVE_ON_FAIL === 'true',
+      attempts: process.env.QUEUE_FAILED_RETRY_ATTEMPTS
+        ? Number.parseInt(process.env.QUEUE_FAILED_RETRY_ATTEMPTS)
         : 0,
       backoff: {
         type: 'exponential', // With an exponential backoff, it will retry after 2 ^ attempts * delay milliseconds

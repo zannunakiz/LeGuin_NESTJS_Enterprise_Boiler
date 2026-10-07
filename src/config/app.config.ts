@@ -88,11 +88,11 @@ class EnvironmentVariablesValidator {
 
   @IsNumber()
   @IsOptional()
-  THROTTLE_LIMIT: number;
+  THROTTLER_LIMIT: number;
 
   @IsNumber()
   @IsOptional()
-  THROTTLE_TTL: number;
+  THROTTLER_TTL: number;
 }
 
 export function getConfig(): AppConfig {
@@ -118,8 +118,8 @@ export function getConfig(): AppConfig {
     logService: process.env.APP_LOG_SERVICE || LogService.CONSOLE,
     corsOrigin: getCorsOrigin(),
     throttle: {
-      limit: Number.parseInt(process.env.THROTTLE_LIMIT),
-      ttl: seconds(Number.parseInt(process.env.THROTTLE_TTL)),
+      limit: Number.parseInt(process.env.THROTTLER_LIMIT),
+      ttl: seconds(Number.parseInt(process.env.THROTTLER_TTL)),
     },
   };
 }

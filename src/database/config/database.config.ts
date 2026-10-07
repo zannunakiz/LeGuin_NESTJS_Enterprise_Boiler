@@ -55,7 +55,7 @@ class EnvironmentVariablesValidator {
 
   @IsBoolean()
   @IsOptional()
-  DATABASE_SSL_ENABLED: boolean;
+  DATABASE_SSL: boolean;
 
   @IsBoolean()
   @IsOptional()
@@ -94,7 +94,7 @@ export function getConfig(): DatabaseConfig {
       ? parseInt(process.env.DATABASE_MAX_CONNECTIONS, 10)
       : 100,
     ssl:
-      process.env.DATABASE_SSL_ENABLED === 'true'
+      process.env.DATABASE_SSL === 'true'
         ? {
             rejectUnauthorized:
               process.env.DATABASE_REJECT_UNAUTHORIZED === 'true',
