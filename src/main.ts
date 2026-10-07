@@ -100,7 +100,9 @@ async function bootstrap() {
   }
 
   await app.listen(
-    configService.getOrThrow('app.port', { infer: true }),
+    isWorker
+      ? configService.getOrThrow('app.workerPort', { infer: true })
+      : configService.getOrThrow('app.port', { infer: true }),
     '0.0.0.0',
   );
 

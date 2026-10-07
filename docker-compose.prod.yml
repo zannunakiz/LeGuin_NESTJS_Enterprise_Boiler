@@ -1,7 +1,10 @@
 services:
   server:
-    container_name: nestjs-boilerplate-prod
-    image: nestjs-boilerplate-prod:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+  worker:
     build:
       context: .
       dockerfile: Dockerfile

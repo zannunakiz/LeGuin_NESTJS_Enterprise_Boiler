@@ -1,11 +1,26 @@
 services:
   server:
+    container_name: nestjs-boilerplate
+    image: nestjs-boilerplate:latest
     restart: unless-stopped
     env_file:
       - .env
     ports:
       - '${APP_PORT}:${APP_PORT}'
-      - '${WEBSOCKET_PORT}:${WEBSOCKET_PORT}'
+      - '${APP_WEBSOCKET_PORT}:${APP_WEBSOCKET_PORT}'
+    networks:
+      - nestjs-boilerplate-network
+
+  worker:
+    container_name: nestjs-boilerplate-worker
+    image: nestjs-boilerplate-worker:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - IS_WORKER=true
+    ports:
+      - '${APP_WORKER_PORT}:${APP_WORKER_PORT}'
     networks:
       - nestjs-boilerplate-network
 

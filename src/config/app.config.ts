@@ -48,7 +48,7 @@ class EnvironmentVariablesValidator {
   @Min(0)
   @Max(65535)
   @IsOptional()
-  WEBSOCKET_PORT: number;
+  APP_WEBSOCKET_PORT: number;
 
   @IsInt()
   @Min(0)
@@ -92,8 +92,8 @@ class EnvironmentVariablesValidator {
 export function getConfig(): AppConfig {
   const port = parseInt(process.env.APP_PORT, 10);
 
-  const websocketPort = process.env.WEBSOCKET_PORT
-    ? parseInt(process.env.WEBSOCKET_PORT, 10)
+  const websocketPort = process.env.APP_WEBSOCKET_PORT
+    ? Number.parseInt(process.env.APP_WEBSOCKET_PORT, 10)
     : port - 1;
 
   return {
@@ -105,6 +105,7 @@ export function getConfig(): AppConfig {
     url: process.env.APP_URL || `http://localhost:${port}`,
     port,
     websocketPort,
+    workerPort: Number.parseInt(process.env.APP_WORKER_PORT, 10),
     debug: process.env.APP_DEBUG === 'true',
     apiPrefix: process.env.API_PREFIX || 'api',
     fallbackLanguage: process.env.APP_FALLBACK_LANGUAGE || 'en',

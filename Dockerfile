@@ -1,4 +1,8 @@
-FROM node:20-alpine AS base
+ARG NODE_IMAGE=node:20-slim
+
+FROM ${NODE_IMAGE} AS base
+
+RUN apt-get update && apt-get install -y procps
 
 RUN npm install -g pnpm@9.12.2
 
@@ -47,7 +51,7 @@ RUN pnpm install --frozen-lockfile --prod
 USER node
 
 # Production stage
-FROM node:20-alpine AS production
+FROM ${NODE_IMAGE} AS production
 WORKDIR /app
 
 RUN npm install -g pm2

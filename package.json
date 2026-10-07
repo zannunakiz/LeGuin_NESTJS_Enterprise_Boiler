@@ -5,7 +5,7 @@
   "author": "Made by 4SRG, inspired by codeforreal as free service and ready to use base",
   "private": true,
   "license": "MIT",
-    "scripts": {
+  "scripts": {
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
@@ -28,7 +28,7 @@
     "seed:create": "env-cmd ts-node ./node_modules/typeorm-extension/bin/cli.cjs seed:create",
     "docker:dev:up": "docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.dev.yml up -d --build",
     "docker:dev:down": "docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.dev.yml down",
-    "docker:prod:up": "docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.prod.yml up -d --force-recreate",
+    "docker:prod:up": "docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.prod.yml up -d --force-recreate --build",
     "docker:prod:down": "docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.prod.yml down",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

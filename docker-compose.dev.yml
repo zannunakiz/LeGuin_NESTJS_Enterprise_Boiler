@@ -1,7 +1,5 @@
 services:
   server:
-    container_name: nestjs-boilerplate-dev
-    image: nestjs-boilerplate-dev:latest
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -12,6 +10,19 @@ services:
       - database
       - redis
       - mail
+    command: >
+      sh -c "pnpm start:dev"
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+      - .:/app
+    depends_on:
+      - database
+      - redis
     command: >
       sh -c "pnpm start:dev"
 

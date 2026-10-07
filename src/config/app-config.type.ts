@@ -8,6 +8,7 @@ export type AppConfig = {
   appPrefix: string;
   url: string;
   port: number;
+  workerPort: number;
   websocketPort: number;
   debug: boolean;
   apiPrefix: string;
