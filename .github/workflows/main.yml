@@ -1,7 +1,7 @@
 name: prod-deployment
 on:
-  push:
-    branches: [main]
+  # push:
+  #   branches: [main]
   workflow_dispatch:
 jobs:
   build:
@@ -9,7 +9,7 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v2
-      - name: Production Deployment
+      - name: Executing remote command
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.PRODUCTION_EC2_HOST }}
