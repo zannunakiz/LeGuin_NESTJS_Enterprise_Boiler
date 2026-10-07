@@ -1,21 +1,16 @@
 {
-  "name": "nestjs-boilerplate",
+  "name": "LEGUIN-nestjs-boilerplate",
   "version": "0.0.0",
   "description": "NestJS Boilerplate",
-  "author": "codeforreal",
+  "author": "Made by 4SRG, inspired by codeforreal as free service and ready to use base",
   "private": true,
   "license": "MIT",
-  "scripts": {
+    "scripts": {
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "yarn pm2:start --no-daemon",
-    "pm2:start": "pm2 start pm2.config.json",
-    "pm2:stop": "pm2 stop nestjs-boilerplate",
-    "pm2:logs": "pm2 logs nestjs-boilerplate",
     "build": "nest build",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -31,10 +26,12 @@
     "db:drop": "env-cmd ts-node ./node_modules/typeorm-extension/bin/cli.cjs db:drop",
     "seed:run": "env-cmd ts-node ./node_modules/typeorm-extension/bin/cli.cjs seed:run",
     "seed:create": "env-cmd ts-node ./node_modules/typeorm-extension/bin/cli.cjs seed:create",
-    "docker:dev:up": "docker image prune -f && docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.dev.yml up -d --build",
-    "docker:dev:down": "docker image prune -f && docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.dev.yml down",
-    "docker:prod:up": "docker image prune -f && docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.prod.yml up -d --force-recreate",
-    "docker:prod:down": "docker image prune -f && docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.prod.yml down",
+    "docker:dev:up": "docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.dev.yml up -d --build",
+    "docker:dev:down": "docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.dev.yml down",
+    "docker:prod:up": "docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.prod.yml up -d --force-recreate",
+    "docker:prod:down": "docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.prod.yml down",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "prepare": "husky || true",
     "graph:app": "madge ./src/main.ts --image ./.tmp/graph.png",
     "graph:circular": "madge --circular ./src/main.ts --image ./.tmp/circular.png",
@@ -101,8 +98,7 @@
     "typeorm": "^0.3.20",
     "typeorm-extension": "^3.6.2",
     "uuid": "^10.0.0",
-    "ws": "^8.18.0",
-    "env-cmd": "^10.1.0"
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",
@@ -143,7 +139,8 @@
     "tsconfig-paths": "^4.2.0",
     "typeorm-markdown-generator": "^1.0.5",
     "typescript": "^5.6.3",
-    "typescript-eslint": "^8.8.1"
+    "typescript-eslint": "^8.8.1",
+    "env-cmd": "^10.1.0"
   },
   "packageManager": "pnpm@9.12.0+sha256.a61b67ff6cc97af864564f4442556c22a04f2e5a7714fbee76a1011361d9b726"
 }
