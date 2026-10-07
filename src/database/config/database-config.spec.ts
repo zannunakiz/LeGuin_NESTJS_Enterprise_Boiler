@@ -140,21 +140,6 @@ describe('databaseConfig', () => {
     });
   });
 
-  describe('synchronize', () => {
-    it('should return the value of DATABASE_SYNCHRONIZE as a boolean', async () => {
-      process.env.NODE_ENV = 'development';
-      process.env.DATABASE_SYNCHRONIZE = 'true';
-      const config = await databaseConfig();
-      expect(typeof config.synchronize).toBe('boolean');
-    });
-
-    it('should return false when DATABASE_SYNCHRONIZE is not set', async () => {
-      delete process.env.DATABASE_SYNCHRONIZE;
-      const config = await databaseConfig();
-      expect(config.synchronize).toBe(false);
-    });
-  });
-
   describe('maxConnections', () => {
     it('should return the value of DATABASE_MAX_CONNECTIONS as a number', async () => {
       process.env.DATABASE_MAX_CONNECTIONS = '10';

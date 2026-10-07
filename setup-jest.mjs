@@ -15,7 +15,6 @@ process.env.DATABASE_USERNAME = 'postgres';
 process.env.DATABASE_PASSWORD = 'postgres';
 process.env.DATABASE_NAME = 'nestjs_api';
 process.env.DATABASE_LOGGING = 'true';
-process.env.DATABASE_SYNCHRONIZE = 'false';
 process.env.DATABASE_MAX_CONNECTIONS = '100';
 process.env.DATABASE_SSL = 'false';
 process.env.DATABASE_REJECT_UNAUTHORIZED = 'false';

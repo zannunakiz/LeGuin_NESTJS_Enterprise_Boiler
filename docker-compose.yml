@@ -5,6 +5,8 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      - IS_WORKER=false
     ports:
       - '${APP_PORT}:${APP_PORT}'
       - '${APP_WEBSOCKET_PORT}:${APP_WEBSOCKET_PORT}'

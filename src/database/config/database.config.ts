@@ -10,7 +10,6 @@ import {
   Min,
   ValidateIf,
 } from 'class-validator';
-import { PostgresDriver } from 'typeorm/driver/postgres/PostgresDriver';
 import { DatabaseConfig } from './database-config.type';
 
 class EnvironmentVariablesValidator {
@@ -43,10 +42,6 @@ class EnvironmentVariablesValidator {
   @IsBoolean()
   @IsOptional()
   DATABASE_LOGGING: boolean;
-
-  @IsBoolean()
-  @IsOptional()
-  DATABASE_SYNCHRONIZE: boolean;
 
   @IsInt()
   @IsPositive()
@@ -85,10 +80,6 @@ export function getConfig(): DatabaseConfig {
     database: process.env.DATABASE_NAME,
     username: process.env.DATABASE_USERNAME,
     logging: process.env.DATABASE_LOGGING === 'true',
-    synchronize: Boolean(
-      process.env.NODE_ENV === 'development' &&
-        process.env.DATABASE_SYNCHRONIZE === 'true',
-    ),
     dropSchema: false,
     poolSize: process.env.DATABASE_MAX_CONNECTIONS
       ? parseInt(process.env.DATABASE_MAX_CONNECTIONS, 10)
@@ -106,9 +97,16 @@ export function getConfig(): DatabaseConfig {
     entities: [__dirname + '/../../**/entities/*.entity{.ts,.js}'],
     migrations: [__dirname + '/../migrations/**/*{.ts,.js}'],
     migrationsTableName: 'migrations',
-    seeds: [__dirname + '/../seeds/**/*{.ts,.js}'],
-    seedTracking: true,
     useUTC: true,
+  };
+}
+
+export function getSeedConfig(): DatabaseConfig {
+  const config = getConfig();
+  return {
+    ...config,
+    migrations: [__dirname + '/../seeds/**/*{.ts,.js}'],
+    migrationsTableName: 'seeders',
   };
 }
 
