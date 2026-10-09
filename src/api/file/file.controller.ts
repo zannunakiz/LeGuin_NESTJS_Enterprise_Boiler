@@ -37,7 +37,7 @@ export class FileController {
     },
   })
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 10e6 } }))
   @Post('/upload/single')
   uploadFile(@UploadedFile() file: File) {
     if (!file) {
@@ -48,7 +48,7 @@ export class FileController {
 
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Uploads multiple files' })
-  @UseInterceptors(FilesInterceptor('files', 4))
+  @UseInterceptors(FilesInterceptor('files', 4, { limits: { fileSize: 10e6 } }))
   @ApiBody({
     required: true,
     schema: {
