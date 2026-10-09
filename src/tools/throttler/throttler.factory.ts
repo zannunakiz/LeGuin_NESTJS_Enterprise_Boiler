@@ -1,9 +1,9 @@
-import { AllConfigType } from '@/config/config.type';
+import { GlobalConfig } from '@/config/config.type';
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
 
-async function useThrottlerFactory(config: ConfigService<AllConfigType>) {
+async function useThrottlerFactory(config: ConfigService<GlobalConfig>) {
   return {
     throttlers: [
       {

@@ -129,26 +129,6 @@ describe('AppConfig', () => {
     });
   });
 
-  describe('apiPrefix', () => {
-    it('should return the value of API_PREFIX', async () => {
-      process.env.API_PREFIX = '/api';
-      const config = await appConfig();
-      expect(config.apiPrefix).toBe('/api');
-    });
-
-    it('should return "api" when API_PREFIX is not set', async () => {
-      delete process.env.API_PREFIX;
-      const config = await appConfig();
-      expect(config.apiPrefix).toBe('api');
-    });
-
-    it('should throw an error when API_PREFIX is an empty string', async () => {
-      process.env.API_PREFIX = '';
-      const config = await appConfig();
-      expect(config.apiPrefix).toBe('api');
-    });
-  });
-
   describe('fallbackLanguage', () => {
     it('should return the value of APP_FALLBACK_LANGUAGE', async () => {
       process.env.APP_FALLBACK_LANGUAGE = 'en';

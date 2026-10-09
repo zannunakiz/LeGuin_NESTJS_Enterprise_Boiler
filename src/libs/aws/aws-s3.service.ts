@@ -1,4 +1,4 @@
-import { AllConfigType } from '@/config/config.type';
+import { GlobalConfig } from '@/config/config.type';
 import {
   PutObjectCommand,
   PutObjectCommandInput,
@@ -14,7 +14,7 @@ import { AwsS3UploadOptions, AwsS3UploadResponse } from './aws.types';
 export class AwsS3Service {
   private s3Client: S3Client;
 
-  constructor(private readonly configService: ConfigService<AllConfigType>) {
+  constructor(private readonly configService: ConfigService<GlobalConfig>) {
     this.s3Client = new S3Client({
       region: this.configService.get('aws.region', { infer: true }),
       credentials: {

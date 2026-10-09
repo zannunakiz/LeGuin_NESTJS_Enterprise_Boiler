@@ -11,7 +11,6 @@ export type AppConfig = {
   workerPort: number;
   websocketPort: number;
   debug: boolean;
-  apiPrefix: string;
   fallbackLanguage: string;
   appLogging: boolean;
   logLevel: string;

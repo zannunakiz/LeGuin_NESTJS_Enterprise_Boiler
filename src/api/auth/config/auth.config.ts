@@ -1,5 +1,5 @@
 import { IsMs } from '@/decorators/validators/is-ms.decorator';
-import validateConfig from '@/utils/validate-config';
+import validateConfig from '@/utils/config/validate-config';
 import { registerAs } from '@nestjs/config';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { AuthConfig } from './auth-config.type';

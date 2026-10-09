@@ -1,16 +1,14 @@
 import { IVerifyEmailJob } from '@/common/interfaces/job.interface';
 import { Branded } from '@/common/types/types';
-import { AllConfigType } from '@/config/config.type';
+import { GlobalConfig } from '@/config/config.type';
 import { CacheKey } from '@/constants/cache.constant';
 import { JobName, QueueName } from '@/constants/job.constant';
 import { I18nTranslations } from '@/generated/i18n.generated';
-import { createCacheKey } from '@/utils/cache.util';
+import { CacheService } from '@/shared/cache/cache.service';
 import { verifyPassword } from '@/utils/password/password.util';
 import { InjectQueue } from '@nestjs/bullmq';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
   ConflictException,
-  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -20,7 +18,6 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Queue } from 'bullmq';
-import { Cache } from 'cache-manager';
 import { plainToInstance } from 'class-transformer';
 import crypto from 'crypto';
 import ms from 'ms';
@@ -51,7 +48,7 @@ type Token = Branded<
 export class AuthService {
   constructor(
     private readonly i18nService: I18nService<I18nTranslations>,
-    private readonly configService: ConfigService<AllConfigType>,
+    private readonly configService: ConfigService<GlobalConfig>,
     private readonly jwtService: JwtService,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
@@ -59,8 +56,7 @@ export class AuthService {
     private readonly sessionRepository: Repository<SessionEntity>,
     @InjectQueue(QueueName.EMAIL)
     private readonly emailQueue: Queue<IVerifyEmailJob, any, string>,
-    @Inject(CACHE_MANAGER)
-    private readonly cacheManager: Cache,
+    private readonly cacheService: CacheService,
   ) {}
 
   async login(dto: LoginReqDto): Promise<LoginResDto> {
@@ -129,10 +125,10 @@ export class AuthService {
         infer: true,
       },
     );
-    await this.cacheManager.set(
-      createCacheKey(CacheKey.EMAIL_VERIFICATION, user.id),
+    await this.cacheService.set(
+      { key: CacheKey.EMAIL_VERIFICATION, args: [user.id] },
       token,
-      ms(tokenExpiresIn),
+      { ttl: +tokenExpiresIn },
     );
     await this.emailQueue.add(JobName.EMAIL_VERIFICATION, {
       email: dto.email,
@@ -145,10 +141,10 @@ export class AuthService {
   }
 
   async logout(userToken: JwtPayloadType): Promise<void> {
-    await this.cacheManager.store.set<boolean>(
-      createCacheKey(CacheKey.SESSION_BLACKLIST, userToken.sessionId),
+    await this.cacheService.storeSet<boolean>(
+      { key: CacheKey.SESSION_BLACKLIST, args: [userToken.sessionId] },
       true,
-      userToken.exp * 1000 - Date.now(),
+      { ttl: userToken.exp * 1000 - Date.now() },
     );
     await SessionEntity.delete(userToken.sessionId);
   }
@@ -195,9 +191,10 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const isSessionBlacklisted = await this.cacheManager.store.get<boolean>(
-      createCacheKey(CacheKey.SESSION_BLACKLIST, payload.sessionId),
-    );
+    const isSessionBlacklisted = await this.cacheService.storeGet<boolean>({
+      key: CacheKey.SESSION_BLACKLIST,
+      args: [payload.sessionId],
+    });
 
     if (isSessionBlacklisted) {
       throw new UnauthorizedException();

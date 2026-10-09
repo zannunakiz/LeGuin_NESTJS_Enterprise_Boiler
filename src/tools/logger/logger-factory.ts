@@ -1,4 +1,4 @@
-import { type AllConfigType } from '@/config/config.type';
+import { type GlobalConfig } from '@/config/config.type';
 import { loggingRedactPaths, LogService } from '@/constants/app.constant';
 import { ConfigService } from '@nestjs/config';
 import { type IncomingMessage, type ServerResponse } from 'http';
@@ -91,7 +91,7 @@ export function consoleLoggingConfig(): Options {
 }
 
 async function useLoggerFactory(
-  configService: ConfigService<AllConfigType>,
+  configService: ConfigService<GlobalConfig>,
 ): Promise<Params> {
   const logLevel = configService.get('app.logLevel', { infer: true });
   const logService = configService.get('app.logService', { infer: true });

@@ -14,7 +14,7 @@ import {
 } from 'class-validator';
 import kebabCase from 'lodash/kebabCase';
 import process from 'node:process';
-import validateConfig from '../utils/validate-config';
+import validateConfig from '../utils/config/validate-config';
 import { AppConfig } from './app-config.type';
 
 class EnvironmentVariablesValidator {
@@ -107,7 +107,6 @@ export function getConfig(): AppConfig {
     websocketPort,
     workerPort: Number.parseInt(process.env.APP_WORKER_PORT, 10),
     debug: process.env.APP_DEBUG === 'true',
-    apiPrefix: process.env.API_PREFIX || 'api',
     fallbackLanguage: process.env.APP_FALLBACK_LANGUAGE || 'en',
     appLogging: process.env.APP_LOGGING === 'true',
     logLevel: process.env.APP_LOG_LEVEL || 'warn',

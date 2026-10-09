@@ -18,7 +18,7 @@ import { setupGracefulShutdown } from 'nestjs-graceful-shutdown';
 
 import { AppModule } from './app.module';
 import { getConfig as getAppConfig } from './config/app.config';
-import { type AllConfigType } from './config/config.type';
+import { type GlobalConfig } from './config/config.type';
 import { Environment } from './constants/app.constant';
 import { WebSocketAdapter } from './shared/gateway/websocket.adapter';
 import { consoleLoggingConfig } from './tools/logger/logger-factory';
@@ -48,7 +48,7 @@ async function bootstrap() {
       bufferLogs: true,
     },
   );
-  const configService = app.get(ConfigService<AllConfigType>);
+  const configService = app.get(ConfigService<GlobalConfig>);
 
   app.useGlobalPipes(
     new ValidationPipe({

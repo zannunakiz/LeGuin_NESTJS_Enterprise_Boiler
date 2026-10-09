@@ -1,5 +1,5 @@
 import { ErrorDto } from '@/common/dto/error.dto';
-import { AllConfigType } from '@/config/config.type';
+import { GlobalConfig } from '@/config/config.type';
 import { Public } from '@/decorators/public.decorator';
 import { Serialize } from '@/interceptors/serialize';
 import { getURI as getRedisURI } from '@/redis/redis.config';
@@ -22,7 +22,7 @@ import { HealthCheckDto } from './dto/health.dto';
 @Controller('health')
 export class HealthController {
   constructor(
-    private configService: ConfigService<AllConfigType>,
+    private configService: ConfigService<GlobalConfig>,
     private health: HealthCheckService,
     private http: HttpHealthIndicator,
     private db: TypeOrmHealthIndicator,

@@ -6,7 +6,6 @@ import redisConfig from '@/redis/redis.config';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { BullModule } from '@nestjs/bullmq';
-import { CacheModule } from '@nestjs/cache-manager';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
@@ -29,8 +28,8 @@ import { default as useGraphqlFactory } from './graphql/graphql.factory';
 import { default as useI18nFactory } from './i18n/i18n.factory';
 import { default as awsConfig } from './libs/aws/aws.config';
 import { MailModule } from './mail/mail.module';
+import { CacheModule as CacheManagerModule } from './shared/cache/cache.module';
 import { GatewayModule } from './shared/gateway/gateway.module';
-import useCacheFactory from './tools/cache/cache.factory';
 import { default as useLoggerFactory } from './tools/logger/logger-factory';
 import { default as sentryConfig } from './tools/sentry/sentry.config';
 import { default as throttlerConfig } from './tools/throttler/throttler.config';
@@ -71,12 +70,6 @@ export class AppModule {
           inject: [ConfigService],
           useFactory: useLoggerFactory,
         }),
-        CacheModule.registerAsync({
-          isGlobal: true,
-          imports: [ConfigModule],
-          inject: [ConfigService],
-          useFactory: useCacheFactory,
-        }),
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
@@ -88,6 +81,7 @@ export class AppModule {
           useFactory: useBullFactory,
         }),
         PrometheusModule.register(),
+        CacheManagerModule,
         MailModule,
       ],
     };

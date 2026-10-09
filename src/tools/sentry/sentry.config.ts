@@ -1,4 +1,4 @@
-import validateConfig from '@/utils/validate-config';
+import validateConfig from '@/utils/config/validate-config';
 import { registerAs } from '@nestjs/config';
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import process from 'node:process';
