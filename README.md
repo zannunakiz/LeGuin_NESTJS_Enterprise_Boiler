@@ -1,9 +1,9 @@
 # Scalable Nest.js Boilerplate
 
+
 ## Features📦
 
-- [x] Fastify
-- [x] NestJS
+- [x] NestJS with Fastify
 - [x] Postgres
 - [x] TypeORM
 - [x] Offset and Cursor based Pagination
@@ -11,16 +11,17 @@
 - [x] Swagger Documentation and API versioning for REST API
 - [x] Automatic API generation on the frontend using OpenAPI Codegen [Learn More](#1-automatic-api-generation-on-the-frontend)
 - [x] Websockets
-- [x] BullMQ for Queues. Bull board to inspect your jobs.
+- [x] BullMQ for Queues. Bull board UI to inspect your jobs.
 - [x] Worker server for processing background tasks like queues.
 - [x] Caching using Redis
 - [x] Pino for Logging
 - [x] Rate Limiter using Redis
 - [x] Graceful Shutdown
-- [x] Server Monitoring with Grafana & Prometheus [Learn More](#4-server-monitoring)
-- [x] File Uploads
+- [x] Server Monitoring with Prometheus & Grafana [Learn More](#4-server-monitoring)
+- [x] File Uploads using AWS S3
 - [x] Sentry
 - [x] Testing with Jest
+- [x] Internationalization using i18n 
 - [x] pnpm
 - [x] Docker: Dev & Prod ready from single script. [Learn More](#5-docker)
 - [x] Github Actions
@@ -32,7 +33,6 @@
 ### 1. Automatic API generation on the Frontend🚀
 
 You can automatically generate and use all of your backend API in frontend in just one command, thanks to Swagger and OpenAPI spec. 
-
 
 ### 2. Dependency Graph 📈
 
@@ -69,8 +69,6 @@ pnpm erd:generate
 <img src="./github-assets/erd.png" style="border: 5px solid teal; height: 1080px;" />
 <figcaption style="text-align: center; font-style: italic;">Sample ERD</figcaption>
 </figure>
-
-Extended from [nestjs-boilerplate](https://github.com/vndevteam/nestjs-boilerplate?tab=readme-ov-file)
 
 ### 4. Server Monitoring
 
