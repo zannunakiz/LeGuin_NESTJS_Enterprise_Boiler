@@ -1,7 +1,7 @@
 services:
   server:
     container_name: nestjs-boilerplate-server
-    image: nestjs-boilerplate:latest
+    image: nestjs-boilerplate-server:latest
     restart: unless-stopped
     env_file:
       - .env
