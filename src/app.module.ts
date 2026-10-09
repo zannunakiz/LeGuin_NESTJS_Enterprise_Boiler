@@ -27,14 +27,15 @@ import { GracefulShutdownModule } from 'nestjs-graceful-shutdown';
 import { ApiModule } from './api/api.module';
 import { default as useGraphqlFactory } from './graphql/graphql.factory';
 import { default as useI18nFactory } from './i18n/i18n.factory';
+import { default as awsConfig } from './libs/aws/aws.config';
 import { MailModule } from './mail/mail.module';
 import { GatewayModule } from './shared/gateway/gateway.module';
 import useCacheFactory from './tools/cache/cache.factory';
 import { default as useLoggerFactory } from './tools/logger/logger-factory';
-import sentryConfig from './tools/sentry/sentry.config';
+import { default as sentryConfig } from './tools/sentry/sentry.config';
 import { default as throttlerConfig } from './tools/throttler/throttler.config';
 import { default as useThrottlerFactory } from './tools/throttler/throttler.factory';
-import bullConfig from './worker/queues/bull.config';
+import { default as bullConfig } from './worker/queues/bull.config';
 import { default as useBullFactory } from './worker/queues/bull.factory';
 import { WorkerModule } from './worker/worker.module';
 
@@ -55,6 +56,7 @@ export class AppModule {
             bullConfig,
             sentryConfig,
             throttlerConfig,
+            awsConfig,
           ],
           envFilePath: ['.env'],
         }),

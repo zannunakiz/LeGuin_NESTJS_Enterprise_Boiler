@@ -1,5 +1,9 @@
 /* eslint-disable no-console */
-import { FileInterceptor, FilesInterceptor } from '@nest-lab/fastify-multer';
+import {
+  File,
+  FileInterceptor,
+  FilesInterceptor,
+} from '@nest-lab/fastify-multer';
 import {
   BadRequestException,
   Controller,
@@ -9,14 +13,15 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FileService } from './file.service';
 
-@ApiTags('files')
+@ApiTags('file')
 @Controller({
-  path: 'files',
+  path: 'file',
   version: '1',
 })
 export class FileController {
-  constructor() {}
+  constructor(private readonly fileService: FileService) {}
 
   @ApiOperation({ summary: 'Uploads a single file' })
   @ApiBody({
@@ -33,14 +38,12 @@ export class FileController {
   })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
-  @Post('/single')
-  singleFile(@UploadedFile() file: File) {
-    throw new Error('Test');
+  @Post('/upload/single')
+  uploadFile(@UploadedFile() file: File) {
     if (!file) {
       throw new BadRequestException('File is required.');
     }
-
-    return console.log(file);
+    return this.fileService.uploadFile(file);
   }
 
   @ApiConsumes('multipart/form-data')
@@ -61,8 +64,8 @@ export class FileController {
       },
     },
   })
-  @Post('/multiple')
-  multipleFiles(@UploadedFiles() files: Array<File>) {
+  @Post('/upload/multiple')
+  uploadFiles(@UploadedFiles() files: Array<File>) {
     if (!files.length) {
       throw new BadRequestException('Files are required.');
     }
