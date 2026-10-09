@@ -2,6 +2,7 @@ import { ApiModule } from '@/api/api.module';
 import { GlobalConfig } from '@/config/config.type';
 import { ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigService } from '@nestjs/config';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import path from 'path';
 
 function useGraphqlFactory(
@@ -10,10 +11,10 @@ function useGraphqlFactory(
   const env = configService.get('app.nodeEnv', { infer: true });
   return {
     playground: env === 'development' || env === 'local',
-    autoSchemaFile:
-      env === 'local'
-        ? path.join(__dirname, '../../src/generated/schema.generated.gql')
-        : false,
+    autoSchemaFile: path.join(
+      __dirname,
+      '../../src/generated/schema.generated.gql',
+    ),
     formatError: (...params: Parameters<ApolloDriverConfig['formatError']>) => {
       const [err] = params;
       if (
@@ -27,7 +28,7 @@ function useGraphqlFactory(
       return err;
     },
     include: [ApiModule],
-    context: (req, res) => ({ req, res }),
+    context: (req: FastifyRequest, res: FastifyReply) => ({ req, res }),
   };
 }
 
