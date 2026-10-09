@@ -1,11 +1,11 @@
 import { GlobalConfig } from '@/config/config.type';
+import { CacheKey } from '@/constants/cache.constant';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cache } from 'cache-manager';
-import ms from 'ms';
 import util from 'util';
-import { CacheKey } from './cache.type';
+import { CacheParam } from './cache.type';
 
 @Injectable()
 export class CacheService {
@@ -15,50 +15,53 @@ export class CacheService {
     private readonly configService: ConfigService<GlobalConfig>,
   ) {}
 
-  async get<T>(keyParams: CacheKey) {
+  async get<T>(keyParams: CacheParam) {
     return this.cacheManager.get<T>(this._constructCacheKey(keyParams));
   }
 
   async set(
-    keyParams: CacheKey,
+    keyParams: CacheParam,
     value: unknown,
-    options?: { ttl?: number },
+    options?: {
+      ttl?: number; // ms
+    },
   ): Promise<{ key: string }> {
     const key = this._constructCacheKey(keyParams);
-    await this.cacheManager.set(
-      key,
-      value,
-      options?.ttl ? 1000 * options?.ttl : undefined,
-    );
+    await this.cacheManager.set(key, value, options?.ttl);
     return { key };
   }
 
-  async storeGet<T>(keyParams: CacheKey) {
+  async storeGet<T>(keyParams: CacheParam) {
     return this.cacheManager.store.get<T>(this._constructCacheKey(keyParams));
   }
 
   async storeSet<T>(
-    keyParams: CacheKey,
+    keyParams: CacheParam,
     value: T,
-    options?: { ttl?: number },
+    options?: {
+      ttl?: number; //ms
+    },
   ): Promise<{ key: string }> {
     const key = this._constructCacheKey(keyParams);
     await this.cacheManager.store.set<T>(
       this._constructCacheKey(keyParams),
       value,
-      ms(`${options?.ttl ?? 0}`),
+      options?.ttl,
     );
     return { key };
   }
 
-  async delete(keyParams: CacheKey): Promise<{ key: string }> {
+  async delete(keyParams: CacheParam): Promise<{ key: string }> {
     const key = this._constructCacheKey(keyParams);
     await this.cacheManager.store.del(key);
     return { key };
   }
 
-  private _constructCacheKey(keyParams: CacheKey): string {
+  private _constructCacheKey(keyParams: CacheParam): string {
     const prefix = this.configService.get('app.appPrefix', { infer: true });
-    return util.format(`${prefix}-${keyParams.key}`, ...(keyParams.args ?? []));
+    return util.format(
+      `${prefix}-${CacheKey[keyParams.key]}`,
+      ...(keyParams.args ?? []),
+    );
   }
 }

@@ -30,20 +30,40 @@ class EnvironmentVariablesValidator {
   @IsBoolean()
   @IsOptional()
   REDIS_TLS: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  REDIS_REJECT_UNAUTHORIZED: boolean;
+
+  @IsString()
+  @IsOptional()
+  REDIS_CA: string;
+
+  @IsString()
+  @IsOptional()
+  REDIS_KEY: string;
+
+  @IsString()
+  @IsOptional()
+  REDIS_CERT: string;
 }
 
-export function getConfig() {
+export function getConfig(): RedisConfig {
   return {
     host: process.env.REDIS_HOST,
     port: parseInt(process.env.REDIS_PORT, 10),
     password: process.env.REDIS_PASSWORD,
-    tlsEnabled: process.env.REDIS_TLS === 'true',
+    tls:
+      process.env.REDIS_TLS === 'true'
+        ? {
+            rejectUnauthorized:
+              process.env.REDIS_REJECT_UNAUTHORIZED === 'true',
+            ca: process.env.REDIS_CA ?? undefined,
+            key: process.env.REDIS_KEY ?? undefined,
+            cert: process.env.REDIS_CERT ?? undefined,
+          }
+        : undefined,
   };
-}
-
-export function getURI() {
-  const config = getConfig();
-  return `redis://${config.password ? `:${config.password}@` : ''}${config.host}:${config.port}`;
 }
 
 export default registerAs<RedisConfig>('redis', () => {

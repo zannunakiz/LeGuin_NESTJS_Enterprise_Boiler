@@ -48,12 +48,6 @@ class EnvironmentVariablesValidator {
   @Min(0)
   @Max(65535)
   @IsOptional()
-  APP_WEBSOCKET_PORT: number;
-
-  @IsInt()
-  @Min(0)
-  @Max(65535)
-  @IsOptional()
   PORT: number;
 
   @IsBoolean()
@@ -92,10 +86,6 @@ class EnvironmentVariablesValidator {
 export function getConfig(): AppConfig {
   const port = parseInt(process.env.APP_PORT, 10);
 
-  const websocketPort = process.env.APP_WEBSOCKET_PORT
-    ? Number.parseInt(process.env.APP_WEBSOCKET_PORT, 10)
-    : port - 1;
-
   return {
     nodeEnv: (process.env.NODE_ENV || Environment.DEVELOPMENT) as Environment,
     isHttps: process.env.IS_HTTPS === 'true',
@@ -104,7 +94,6 @@ export function getConfig(): AppConfig {
     appPrefix: kebabCase(process.env.APP_NAME),
     url: process.env.APP_URL || `http://localhost:${port}`,
     port,
-    websocketPort,
     workerPort: Number.parseInt(process.env.APP_WORKER_PORT, 10),
     debug: process.env.APP_DEBUG === 'true',
     fallbackLanguage: process.env.APP_FALLBACK_LANGUAGE || 'en',
@@ -128,5 +117,26 @@ function getCorsOrigin() {
   if (corsOrigin === '*') return '*';
   if (!corsOrigin || corsOrigin === 'false') return false;
 
-  return corsOrigin.split(',').map((origin) => origin.trim());
+  const origins = corsOrigin.split(',').map((origin) => origin.trim());
+
+  // localhost
+  const localhost = origins
+    ?.map((origin) =>
+      origin?.startsWith('http://localhost')
+        ? origin?.replace('http://localhost', 'http://127.0.0.1')
+        : origin,
+    )
+    ?.filter((origin, index) => origin !== origins[index]);
+  origins.push(...localhost);
+
+  // www
+  const wwwOrigins = origins
+    ?.map((origin) =>
+      origin?.startsWith('https://')
+        ? origin?.replace('https://', 'https://www.')
+        : origin,
+    )
+    ?.filter((origin, index) => origin !== origins[index]);
+  origins.push(...wwwOrigins);
+  return origins;
 }

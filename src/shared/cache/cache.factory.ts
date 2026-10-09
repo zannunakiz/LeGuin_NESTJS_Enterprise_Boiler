@@ -14,7 +14,7 @@ async function useCacheFactory(config: ConfigService<GlobalConfig>) {
       password: config.getOrThrow('redis.password', {
         infer: true,
       }),
-      tls: config.get('redis.tlsEnabled', { infer: true }),
+      tls: config.get('redis.tls', { infer: true }),
     }),
   };
 }

@@ -20,7 +20,7 @@ async function useBullFactory(
       password: configService.getOrThrow('redis.password', {
         infer: true,
       }),
-      tls: configService.get('redis.tlsEnabled', { infer: true }),
+      tls: configService.get('redis.tls', { infer: true }),
     },
   };
 }

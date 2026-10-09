@@ -8,5 +8,5 @@ export class RefreshResDto {
   refreshToken!: string;
 
   @NumberField()
-  tokenExpires!: number;
+  tokenTTL!: number;
 }

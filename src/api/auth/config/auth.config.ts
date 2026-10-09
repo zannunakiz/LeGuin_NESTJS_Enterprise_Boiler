@@ -42,16 +42,16 @@ class EnvironmentVariablesValidator {
   AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN: string;
 }
 
-export function getConfig() {
+export function getConfig(): AuthConfig {
   return {
     secret: process.env.AUTH_JWT_SECRET,
-    expires: process.env.AUTH_JWT_TOKEN_EXPIRES_IN,
+    expiresIn: process.env.AUTH_JWT_TOKEN_EXPIRES_IN,
     refreshSecret: process.env.AUTH_REFRESH_SECRET,
-    refreshExpires: process.env.AUTH_REFRESH_TOKEN_EXPIRES_IN,
+    refreshExpiresIn: process.env.AUTH_REFRESH_TOKEN_EXPIRES_IN,
     forgotSecret: process.env.AUTH_FORGOT_SECRET,
-    forgotExpires: process.env.AUTH_FORGOT_TOKEN_EXPIRES_IN,
+    forgotExpiresIn: process.env.AUTH_FORGOT_TOKEN_EXPIRES_IN,
     confirmEmailSecret: process.env.AUTH_CONFIRM_EMAIL_SECRET,
-    confirmEmailExpires: process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN,
+    confirmEmailExpiresIn: process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN,
   };
 }
 

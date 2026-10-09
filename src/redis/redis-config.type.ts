@@ -1,6 +1,8 @@
+import { RedisOptions } from 'ioredis';
+
 export type RedisConfig = {
   host?: string;
   port: number;
   password?: string;
-  tlsEnabled: boolean;
+  tls: RedisOptions['tls'];
 };

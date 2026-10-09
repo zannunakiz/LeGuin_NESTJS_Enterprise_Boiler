@@ -1,7 +1,6 @@
 import { IVerifyEmailJob } from '@/common/interfaces/job.interface';
 import { Branded } from '@/common/types/types';
 import { GlobalConfig } from '@/config/config.type';
-import { CacheKey } from '@/constants/cache.constant';
 import { JobName, QueueName } from '@/constants/job.constant';
 import { I18nTranslations } from '@/generated/i18n.generated';
 import { CacheService } from '@/shared/cache/cache.service';
@@ -31,7 +30,6 @@ import { RefreshReqDto } from './dto/refresh.req.dto';
 import { RefreshResDto } from './dto/refresh.res.dto';
 import { RegisterReqDto } from './dto/register.req.dto';
 import { RegisterResDto } from './dto/register.res.dto';
-import { SessionEntity } from './entities/session.entity';
 import { JwtPayloadType } from './types/jwt-payload.type';
 import { JwtRefreshPayloadType } from './types/jwt-refresh-payload.type';
 
@@ -39,7 +37,7 @@ type Token = Branded<
   {
     accessToken: string;
     refreshToken: string;
-    tokenExpires: number;
+    tokenTTL: number;
   },
   'token'
 >;
@@ -52,8 +50,6 @@ export class AuthService {
     private readonly jwtService: JwtService,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-    @InjectRepository(SessionEntity)
-    private readonly sessionRepository: Repository<SessionEntity>,
     @InjectQueue(QueueName.EMAIL)
     private readonly emailQueue: Queue<IVerifyEmailJob, any, string>,
     private readonly cacheService: CacheService,
@@ -73,22 +69,10 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
+    const { hash } = await this._generateAuthHash(user?.id);
 
-    const session = this.sessionRepository.create({
-      hash,
-      userId: user.id,
-      createdByUserId: user.id,
-      updatedByUserId: user.id,
-    });
-    await session.save();
-
-    const token = await this._createToken({
+    const token = await this._createAuthTokens({
       id: user.id,
-      sessionId: session.id,
       hash,
       role: user?.role,
     });
@@ -118,18 +102,8 @@ export class AuthService {
 
     await user.save({ transaction: false });
 
-    const token = await this._createVerificationToken({ id: user.id });
-    const tokenExpiresIn = this.configService.getOrThrow(
-      'auth.confirmEmailExpires',
-      {
-        infer: true,
-      },
-    );
-    await this.cacheService.set(
-      { key: CacheKey.EMAIL_VERIFICATION, args: [user.id] },
-      token,
-      { ttl: +tokenExpiresIn },
-    );
+    const token = await this._createEmailVerificationToken(user?.id);
+
     await this.emailQueue.add(JobName.EMAIL_VERIFICATION, {
       email: dto.email,
       token,
@@ -140,45 +114,31 @@ export class AuthService {
     });
   }
 
-  async logout(userToken: JwtPayloadType): Promise<void> {
-    await this.cacheService.storeSet<boolean>(
-      { key: CacheKey.SESSION_BLACKLIST, args: [userToken.sessionId] },
-      true,
-      { ttl: userToken.exp * 1000 - Date.now() },
-    );
-    await SessionEntity.delete(userToken.sessionId);
-  }
-
   async refreshToken(dto: RefreshReqDto): Promise<RefreshResDto> {
-    const { sessionId, hash } = this._verifyRefreshToken(dto.refreshToken);
-    const session = await SessionEntity.findOneBy({ id: sessionId });
-
-    if (!session || session.hash !== hash) {
+    let payload: JwtRefreshPayloadType;
+    try {
+      payload = await this.verifyRefreshToken(dto.refreshToken);
+    } catch {
       throw new UnauthorizedException();
     }
-
+    const { hash, id: userId } = payload;
     const user = await this.userRepository.findOne({
-      where: { id: session.userId },
+      where: { id: userId },
       select: ['id'],
     });
-
     if (!user) {
       throw new NotFoundException(this.i18nService.t('user.notFound'));
     }
 
-    const newHash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
+    const { hash: newHash } = await this._generateAuthHash(userId);
 
-    SessionEntity.update(session.id, { hash: newHash });
-
-    return await this._createToken({
+    const tokens = await this._createAuthTokens({
       id: user.id,
-      sessionId: session.id,
       hash: newHash,
       role: user?.role,
     });
+    await this.cacheService.delete({ key: 'ACCESS_TOKEN', args: [hash] });
+    return tokens;
   }
 
   async verifyAccessToken(token: string): Promise<JwtPayloadType> {
@@ -190,22 +150,22 @@ export class AuthService {
     } catch {
       throw new UnauthorizedException();
     }
+    const { id, hash } = payload;
 
-    const isSessionBlacklisted = await this.cacheService.storeGet<boolean>({
-      key: CacheKey.SESSION_BLACKLIST,
-      args: [payload.sessionId],
+    const userId = await this.cacheService.get<string>({
+      key: 'ACCESS_TOKEN',
+      args: [hash],
     });
-
-    if (isSessionBlacklisted) {
+    if (!userId || userId !== id) {
       throw new UnauthorizedException();
     }
-
     return payload;
   }
 
-  private _verifyRefreshToken(token: string): JwtRefreshPayloadType {
+  async verifyRefreshToken(token: string): Promise<JwtRefreshPayloadType> {
+    let payload: JwtRefreshPayloadType;
     try {
-      return this.jwtService.verify(token, {
+      payload = this.jwtService.verify(token, {
         secret: this.configService.getOrThrow('auth.refreshSecret', {
           infer: true,
         }),
@@ -213,43 +173,59 @@ export class AuthService {
     } catch {
       throw new UnauthorizedException();
     }
+    const { id, hash } = payload;
+    const userId = await this.cacheService.get<string>({
+      key: 'ACCESS_TOKEN',
+      args: [hash],
+    });
+    if (!userId || userId !== id) {
+      throw new UnauthorizedException();
+    }
+    return payload;
   }
 
-  private async _createVerificationToken(data: {
-    id: string;
-  }): Promise<string> {
-    return await this.jwtService.signAsync(
+  private async _createEmailVerificationToken(userId: string): Promise<string> {
+    const token = await this.jwtService.signAsync(
       {
-        id: data.id,
+        id: userId,
       },
       {
         secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
           infer: true,
         }),
-        expiresIn: this.configService.getOrThrow('auth.confirmEmailExpires', {
+        expiresIn: this.configService.getOrThrow('auth.confirmEmailExpiresIn', {
           infer: true,
         }),
       },
     );
+    const tokenExpiresIn = this.configService.getOrThrow(
+      'auth.confirmEmailExpiresIn',
+      {
+        infer: true,
+      },
+    );
+    await this.cacheService.set(
+      { key: 'EMAIL_VERIFICATION_TOKEN', args: [userId] },
+      token,
+      { ttl: ms(tokenExpiresIn) },
+    );
+    return token;
   }
 
-  private async _createToken(data: {
+  private async _createAuthTokens(data: {
     id: string;
-    sessionId: string;
     hash: string;
     role: Role;
   }): Promise<Token> {
-    const tokenExpiresIn = this.configService.getOrThrow('auth.expires', {
+    const tokenExpiresIn = this.configService.getOrThrow('auth.expiresIn', {
       infer: true,
     });
-    const tokenExpires = Date.now() + ms(tokenExpiresIn);
-
     const [accessToken, refreshToken] = await Promise.all([
       await this.jwtService.signAsync(
         {
           id: data.id,
+          hash: data.hash,
           role: data?.role,
-          sessionId: data.sessionId,
         },
         {
           secret: this.configService.getOrThrow('auth.secret', { infer: true }),
@@ -258,14 +234,14 @@ export class AuthService {
       ),
       await this.jwtService.signAsync(
         {
-          sessionId: data.sessionId,
+          id: data.id,
           hash: data.hash,
         },
         {
           secret: this.configService.getOrThrow('auth.refreshSecret', {
             infer: true,
           }),
-          expiresIn: this.configService.getOrThrow('auth.refreshExpires', {
+          expiresIn: this.configService.getOrThrow('auth.refreshExpiresIn', {
             infer: true,
           }),
         },
@@ -274,7 +250,23 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
-      tokenExpires,
+      tokenTTL: ms(tokenExpiresIn),
     } as Token;
+  }
+
+  private async _generateAuthHash(userId: string) {
+    const tokenExpiresIn = this.configService.getOrThrow('auth.expiresIn', {
+      infer: true,
+    });
+    const hash = crypto
+      .createHash('sha256')
+      .update(randomStringGenerator())
+      .digest('hex');
+
+    const ttl = ms(tokenExpiresIn);
+    await this.cacheService.set({ key: 'ACCESS_TOKEN', args: [hash] }, userId, {
+      ttl: ttl,
+    });
+    return { hash, ttl: ttl };
   }
 }

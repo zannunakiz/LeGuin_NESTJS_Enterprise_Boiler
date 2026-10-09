@@ -9,7 +9,6 @@ export type AppConfig = {
   url: string;
   port: number;
   workerPort: number;
-  websocketPort: number;
   debug: boolean;
   fallbackLanguage: string;
   appLogging: boolean;

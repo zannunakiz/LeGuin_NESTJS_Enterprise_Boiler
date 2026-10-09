@@ -1,7 +1,5 @@
-import { Uuid } from '@/common/types/common.type';
-
 export type JwtRefreshPayloadType = {
-  sessionId: Uuid;
+  id: string;
   hash: string;
   iat: number;
   exp: number;

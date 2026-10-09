@@ -2,7 +2,6 @@ import { ErrorDto } from '@/common/dto/error.dto';
 import { GlobalConfig } from '@/config/config.type';
 import { Public } from '@/decorators/public.decorator';
 import { Serialize } from '@/interceptors/serialize';
-import { getURI as getRedisURI } from '@/redis/redis.config';
 import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RedisOptions, Transport } from '@nestjs/microservices';
@@ -15,7 +14,6 @@ import {
   MicroserviceHealthIndicator,
   TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
-import { parseURL } from 'ioredis/built/utils';
 import { HealthCheckDto } from './dto/health.dto';
 
 @ApiTags('health')
@@ -44,16 +42,13 @@ export class HealthController {
   @HealthCheck()
   async check(): Promise<HealthCheckResult> {
     const environment = this.configService.get('app.nodeEnv', { infer: true });
-    const redisOption = parseURL(getRedisURI()) ?? {};
 
     const list = [
       () => this.db.pingCheck('database', { timeout: 5000 }),
       () =>
         this.microservice.pingCheck<RedisOptions>('redis', {
           transport: Transport.REDIS,
-          options: {
-            ...redisOption,
-          },
+          options: this.configService.getOrThrow('redis'),
         }),
       ...(environment === 'development' || environment === 'local'
         ? [

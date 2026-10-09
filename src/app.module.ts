@@ -29,7 +29,7 @@ import { default as useI18nFactory } from './i18n/i18n.factory';
 import { default as awsConfig } from './libs/aws/aws.config';
 import { MailModule } from './mail/mail.module';
 import { CacheModule as CacheManagerModule } from './shared/cache/cache.module';
-import { GatewayModule } from './shared/gateway/gateway.module';
+import { SocketModule } from './shared/socket/socket.module';
 import { default as useLoggerFactory } from './tools/logger/logger-factory';
 import { default as sentryConfig } from './tools/sentry/sentry.config';
 import { default as throttlerConfig } from './tools/throttler/throttler.config';
@@ -115,7 +115,7 @@ export class AppModule {
           route: '/queues',
           adapter: FastifyAdapter,
         }),
-        GatewayModule,
+        SocketModule,
         ApiModule,
       ],
       providers: [
