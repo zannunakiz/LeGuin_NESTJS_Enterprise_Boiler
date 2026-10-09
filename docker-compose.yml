@@ -1,6 +1,6 @@
 services:
   server:
-    container_name: nestjs-boilerplate
+    container_name: nestjs-boilerplate-server
     image: nestjs-boilerplate:latest
     restart: unless-stopped
     env_file:
@@ -12,6 +12,8 @@ services:
       - '${APP_WEBSOCKET_PORT}:${APP_WEBSOCKET_PORT}'
     networks:
       - nestjs-boilerplate-network
+    depends_on:
+      - redis
 
   worker:
     container_name: nestjs-boilerplate-worker
@@ -25,6 +27,8 @@ services:
       - '${APP_WORKER_PORT}:${APP_WORKER_PORT}'
     networks:
       - nestjs-boilerplate-network
+    depends_on:
+      - redis
 
   redis:
     image: redis:7.0.1-alpine
@@ -42,18 +46,6 @@ services:
     networks:
       - nestjs-boilerplate-network
 
-  # Solution to fix prometheus volume permission issue
-  setup_prometheus:
-    image: prom/prometheus:v3.0.1
-    user: root
-    entrypoint:
-      - /bin/sh
-      - -c
-      - |
-        chown -R 65534:65534 /prometheus
-    volumes:
-      - ./.docker/prometheus-data:/prometheus
-
   prometheus:
     image: prom/prometheus:v3.0.1
     container_name: nestjs-boilerplate-prometheus
@@ -64,8 +56,56 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yaml'
     volumes:
       - ./prometheus.config.yml:/etc/prometheus/prometheus.yaml:ro
+    networks:
+      - nestjs-boilerplate-network
     depends_on:
       - setup_prometheus
+
+  grafana:
+    image: grafana/grafana-oss:11.3.1
+    container_name: nestjs-boilerplate-grafana
+    restart: unless-stopped
+    ports:
+      - '${DOCKER_GRAFANA_PORT}:3000'
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USERNAME}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - nestjs-boilerplate-network
+    depends_on:
+      - prometheus
+      - setup_grafana
+
+  # Solution to fix prometheus volume permission issue
+  setup_prometheus:
+    image: prom/prometheus:v3.0.1
+    container_name: nestjs-boilerplate-setup-prometheus
+    restart: no
+    user: root
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        chown -R 65534:65534 /prometheus
+    volumes:
+      - ./.docker/prometheus-data:/prometheus
+
+  # Solution to fix grafana volume permission issue
+  setup_grafana:
+    image: grafana/grafana-oss:11.3.1
+    container_name: nestjs-boilerplate-setup-grafana
+    restart: no
+    user: root
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        chown -R 65534:65534 /var/lib/grafana
+    volumes:
+      - ./.docker/grafana-data:/var/lib/grafana
 
 networks:
   nestjs-boilerplate-network:

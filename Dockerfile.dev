@@ -11,5 +11,4 @@ WORKDIR /app
 
 COPY package*.json pnpm-lock.yaml ./
 
-RUN pnpm fetch
 RUN pnpm install

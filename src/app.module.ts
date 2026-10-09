@@ -29,8 +29,6 @@ import { MailModule } from './mail/mail.module';
 import { GatewayModule } from './shared/gateway/gateway.module';
 import useCacheFactory from './tools/cache/cache.factory';
 import { default as useLoggerFactory } from './tools/logger/logger-factory';
-import prometheusConfig from './tools/prometheus/prometheus.config';
-import usePrometheusFactory from './tools/prometheus/prometheus.factory';
 import sentryConfig from './tools/sentry/sentry.config';
 import { default as throttlerConfig } from './tools/throttler/throttler.config';
 import { default as useThrottlerFactory } from './tools/throttler/throttler.factory';
@@ -55,7 +53,6 @@ export class AppModule {
             bullConfig,
             sentryConfig,
             throttlerConfig,
-            prometheusConfig,
           ],
           envFilePath: ['.env'],
         }),
@@ -86,6 +83,7 @@ export class AppModule {
           inject: [ConfigService],
           useFactory: useBullFactory,
         }),
+        PrometheusModule.register(),
         MailModule,
       ],
     };
@@ -114,11 +112,6 @@ export class AppModule {
           imports: [ConfigModule],
           inject: [ConfigService],
           useFactory: useThrottlerFactory,
-        }),
-        PrometheusModule.registerAsync({
-          imports: [ConfigModule],
-          inject: [ConfigService],
-          useFactory: usePrometheusFactory,
         }),
         GatewayModule,
         ApiModule,

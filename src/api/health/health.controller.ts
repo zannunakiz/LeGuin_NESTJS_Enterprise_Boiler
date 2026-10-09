@@ -55,11 +55,6 @@ export class HealthController {
             ...redisOption,
           },
         }),
-      () =>
-        this.http.pingCheck(
-          'prometheus',
-          `${this.configService.getOrThrow('app.url', { infer: true })}/${this.configService.getOrThrow('prometheus.path', { infer: true })}`,
-        ),
       ...(environment === 'development' || environment === 'local'
         ? [
             () =>
