@@ -65,17 +65,17 @@ export class GatewayService
       key: socket?.remoteAddress,
     });
 
+    await this.cacheService.delete({ key: socket?.remoteAddress });
+
     if (remoteUsers && Array.isArray(remoteUsers)) {
       for (const user of remoteUsers) {
         const client = this.clients.get(user);
         if (client) {
-          this.sendTo(user, 'RECONNECT');
+          this.sendTo(user, 'reconnect');
           this.clients.delete(user);
         }
       }
     }
-
-    this.cacheService.delete({ key: socket?.remoteAddress });
   }
 
   /**
