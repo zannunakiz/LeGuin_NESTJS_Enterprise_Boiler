@@ -1,10 +1,10 @@
-import { AllConfigType } from '@/config/config.type';
+import { GlobalConfig } from '@/config/config.type';
 import { type BullRootModuleOptions } from '@nestjs/bullmq';
 import { ConfigService } from '@nestjs/config';
 import bullConfig from './bull.config';
 
 async function useBullFactory(
-  configService: ConfigService<AllConfigType>,
+  configService: ConfigService<GlobalConfig>,
 ): Promise<BullRootModuleOptions> {
   const config = await bullConfig();
   return {
@@ -20,7 +20,7 @@ async function useBullFactory(
       password: configService.getOrThrow('redis.password', {
         infer: true,
       }),
-      tls: configService.get('redis.tlsEnabled', { infer: true }),
+      tls: configService.get('redis.tls', { infer: true }),
     },
   };
 }

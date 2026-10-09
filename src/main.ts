@@ -18,9 +18,9 @@ import { setupGracefulShutdown } from 'nestjs-graceful-shutdown';
 
 import { AppModule } from './app.module';
 import { getConfig as getAppConfig } from './config/app.config';
-import { type AllConfigType } from './config/config.type';
+import { type GlobalConfig } from './config/config.type';
 import { Environment } from './constants/app.constant';
-import { WebSocketAdapter } from './shared/gateway/websocket.adapter';
+import { RedisIoAdapter } from './shared/socket/redis.adapter';
 import { consoleLoggingConfig } from './tools/logger/logger-factory';
 import { SentryInterceptor } from './tools/sentry/sentry.interceptor';
 import setupSwagger from './tools/swagger/swagger.setup';
@@ -48,7 +48,7 @@ async function bootstrap() {
       bufferLogs: true,
     },
   );
-  const configService = app.get(ConfigService<AllConfigType>);
+  const configService = app.get(ConfigService<GlobalConfig>);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -96,7 +96,7 @@ async function bootstrap() {
   }
 
   if (!isWorker) {
-    app.useWebSocketAdapter(new WebSocketAdapter(app, configService));
+    app.useWebSocketAdapter(new RedisIoAdapter(app));
   }
 
   await app.listen({
@@ -107,20 +107,10 @@ async function bootstrap() {
   });
 
   const httpUrl = await app.getUrl();
-  const wsUrl = httpUrl
-    .replace(/^http/, 'ws')
-    .replace(
-      `:${configService.get('app.port', { infer: true })}`,
-      `:${configService.get('app.websocketPort', { infer: true })}`,
-    );
   // eslint-disable-next-line no-console
   console.info(
     `\x1b[3${isWorker ? '3' : '4'}m${isWorker ? 'Worker ' : ''}Server running at ${httpUrl}`,
   );
-  if (!isWorker) {
-    // eslint-disable-next-line no-console
-    console.info(`\x1b[34mWebsocket server running at ${wsUrl}`);
-  }
 
   return app;
 }

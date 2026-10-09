@@ -1,6 +1,6 @@
 import { RedisConfig } from '@/redis/redis-config.type';
 import redisConfig from '@/redis/redis.config';
-import validateConfig from '@/utils/validate-config';
+import validateConfig from '@/utils/config/validate-config';
 import { registerAs } from '@nestjs/config';
 import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 import kebabCase from 'lodash/kebabCase';

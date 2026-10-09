@@ -1,10 +1,12 @@
-import { AllConfigType } from '@/config/config.type';
+import { ApiModule } from '@/api/api.module';
+import { GlobalConfig } from '@/config/config.type';
 import { ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigService } from '@nestjs/config';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import path from 'path';
 
 function useGraphqlFactory(
-  configService: ConfigService<AllConfigType>,
+  configService: ConfigService<GlobalConfig>,
 ): ApolloDriverConfig {
   const env = configService.get('app.nodeEnv', { infer: true });
   return {
@@ -25,6 +27,8 @@ function useGraphqlFactory(
       }
       return err;
     },
+    include: [ApiModule],
+    context: (req: FastifyRequest, res: FastifyReply) => ({ req, res }),
   };
 }
 

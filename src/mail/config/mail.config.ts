@@ -10,7 +10,7 @@ import {
   Max,
   Min,
 } from 'class-validator';
-import validateConfig from '../../utils/validate-config';
+import validateConfig from '../../utils/config/validate-config';
 import { MailConfig } from './mail-config.type';
 
 class EnvironmentVariablesValidator {

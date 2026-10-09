@@ -10,7 +10,7 @@
 - [x] REST & GraphQL API
 - [x] Swagger Documentation and API versioning for REST API
 - [x] Automatic API generation on the frontend using OpenAPI Codegen [Learn More](#1-automatic-api-generation-on-the-frontend)
-- [x] Websockets
+- [x] Websockets using Socket.io via Redis Adapter(For future scalability with clusters)
 - [x] BullMQ for Queues. Bull board UI to inspect your jobs.
 - [x] Worker server for processing background tasks like queues.
 - [x] Caching using Redis
@@ -70,13 +70,15 @@ pnpm erd:generate
 <figcaption style="text-align: center; font-style: italic;">Sample ERD</figcaption>
 </figure>
 
-### 4. Server Monitoring
+### 4. Server & Database Monitoring 📊
 
-Prometheus & Grafana are available with Docker setup. They're available when application is ready after running `pnpm docker:<dev | prod>:up`.
+Prometheus & Grafana are available with Docker setup only. You might only need to monitor your server or database when the user base grows or when you want to debug some specific issues. That's why this step is completely optional. If you want to monitor your server or database, just enable `monitoring` profile in your `.env` i.e. `COMPOSE_PROFILES=monitoring`.
 
-Make sure to set Grafana username and password in `.env` file to access the server dashboards.
-
+Server Monitoring Dashboard:
 ![alt text](./github-assets/server-monitoring.png)
+
+Database Monitoring Dashboard:
+![alt text](./github-assets/database-monitoring.png)
 
 ### 5. Docker 🐬
 

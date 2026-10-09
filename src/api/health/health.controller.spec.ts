@@ -1,4 +1,4 @@
-import { AllConfigType } from '@/config/config.type';
+import { GlobalConfig } from '@/config/config.type';
 import { ConfigService } from '@nestjs/config';
 import {
   HealthCheckService,
@@ -13,7 +13,7 @@ describe('HealthController', () => {
   let controller: HealthController;
   let service: HealthCheckService;
   let configServiceValue: Partial<
-    Record<keyof ConfigService<AllConfigType>, jest.Mock>
+    Record<keyof ConfigService<GlobalConfig>, jest.Mock>
   >;
   let healthCheckServiceValue: Partial<
     Record<keyof HealthCheckService, jest.Mock>

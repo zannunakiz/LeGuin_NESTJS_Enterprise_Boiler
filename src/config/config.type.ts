@@ -8,7 +8,7 @@ import { ThrottlerConfig } from '@/tools/throttler/throttler-config.type';
 import { BullConfig } from '@/worker/queues/bull-config.type';
 import { AppConfig } from './app-config.type';
 
-export type AllConfigType = {
+export type GlobalConfig = {
   app: AppConfig;
   database: DatabaseConfig;
   redis: RedisConfig;

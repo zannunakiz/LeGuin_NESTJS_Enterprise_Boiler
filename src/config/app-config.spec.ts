@@ -129,26 +129,6 @@ describe('AppConfig', () => {
     });
   });
 
-  describe('apiPrefix', () => {
-    it('should return the value of API_PREFIX', async () => {
-      process.env.API_PREFIX = '/api';
-      const config = await appConfig();
-      expect(config.apiPrefix).toBe('/api');
-    });
-
-    it('should return "api" when API_PREFIX is not set', async () => {
-      delete process.env.API_PREFIX;
-      const config = await appConfig();
-      expect(config.apiPrefix).toBe('api');
-    });
-
-    it('should throw an error when API_PREFIX is an empty string', async () => {
-      process.env.API_PREFIX = '';
-      const config = await appConfig();
-      expect(config.apiPrefix).toBe('api');
-    });
-  });
-
   describe('fallbackLanguage', () => {
     it('should return the value of APP_FALLBACK_LANGUAGE', async () => {
       process.env.APP_FALLBACK_LANGUAGE = 'en';
@@ -241,7 +221,10 @@ describe('AppConfig', () => {
     it('should return a single origin when APP_CORS_ORIGIN is a valid URL', async () => {
       process.env.APP_CORS_ORIGIN = 'https://example.com';
       const config = await appConfig();
-      expect(config.corsOrigin).toEqual(['https://example.com']);
+      expect(config.corsOrigin).toEqual([
+        'https://example.com',
+        'https://www.example.com',
+      ]);
     });
 
     it('should return multiple origins when APP_CORS_ORIGIN is a comma-separated list of valid URLs', async () => {
@@ -250,6 +233,8 @@ describe('AppConfig', () => {
       expect(config.corsOrigin).toEqual([
         'https://example.com',
         'https://another.com',
+        'https://www.example.com',
+        'https://www.another.com',
       ]);
     });
 

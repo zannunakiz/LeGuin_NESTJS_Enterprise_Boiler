@@ -1,11 +1,11 @@
-import { AllConfigType } from '@/config/config.type';
+import { GlobalConfig } from '@/config/config.type';
 import { MailerOptions } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ConfigService } from '@nestjs/config';
 import path from 'path';
 
 async function useMailFactory(
-  config: ConfigService<AllConfigType>,
+  config: ConfigService<GlobalConfig>,
 ): Promise<MailerOptions> {
   return {
     transport: {

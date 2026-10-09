@@ -1,5 +1,5 @@
 export enum CacheKey {
-  SESSION_BLACKLIST = 'auth:session-blacklist:%s', // %s: sessionId
-  EMAIL_VERIFICATION = 'auth:token:%s:email-verification', // %s: userId
-  PASSWORD_RESET = 'auth:token:%s:password', // %s: userId
+  ACCESS_TOKEN = 'auth:token:%s:access', // %s: hash
+  EMAIL_VERIFICATION_TOKEN = 'auth:token:%s:email-verification', // %s: userId
+  USER_SOCKET_CLIENTS = 'socket:%s:clients', // %s: userId
 }

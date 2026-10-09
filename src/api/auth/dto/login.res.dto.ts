@@ -17,5 +17,5 @@ export class LoginResDto {
 
   @Expose()
   @NumberField()
-  tokenExpires!: number;
+  tokenTTL!: number;
 }

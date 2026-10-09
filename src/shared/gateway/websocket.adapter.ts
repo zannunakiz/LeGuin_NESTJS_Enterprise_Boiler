@@ -1,4 +1,4 @@
-import { AllConfigType } from '@/config/config.type';
+import { GlobalConfig } from '@/config/config.type';
 import { INestApplicationContext, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WsAdapter } from '@nestjs/platform-ws';
@@ -9,7 +9,7 @@ export class WebSocketAdapter extends WsAdapter {
 
   constructor(
     private app: INestApplicationContext,
-    private configService: ConfigService<AllConfigType>,
+    private configService: ConfigService<GlobalConfig>,
   ) {
     super(app);
   }

@@ -6,7 +6,6 @@ import redisConfig from '@/redis/redis.config';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { BullModule } from '@nestjs/bullmq';
-import { CacheModule } from '@nestjs/cache-manager';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
@@ -29,12 +28,13 @@ import { default as useGraphqlFactory } from './graphql/graphql.factory';
 import { default as useI18nFactory } from './i18n/i18n.factory';
 import { default as awsConfig } from './libs/aws/aws.config';
 import { MailModule } from './mail/mail.module';
-import { GatewayModule } from './shared/gateway/gateway.module';
-import useCacheFactory from './tools/cache/cache.factory';
+import { CacheModule as CacheManagerModule } from './shared/cache/cache.module';
+import { SocketModule } from './shared/socket/socket.module';
 import { default as useLoggerFactory } from './tools/logger/logger-factory';
 import { default as sentryConfig } from './tools/sentry/sentry.config';
 import { default as throttlerConfig } from './tools/throttler/throttler.config';
 import { default as useThrottlerFactory } from './tools/throttler/throttler.factory';
+import { AppThrottlerGuard } from './tools/throttler/throttler.guard';
 import { default as bullConfig } from './worker/queues/bull.config';
 import { default as useBullFactory } from './worker/queues/bull.factory';
 import { WorkerModule } from './worker/worker.module';
@@ -71,12 +71,6 @@ export class AppModule {
           inject: [ConfigService],
           useFactory: useLoggerFactory,
         }),
-        CacheModule.registerAsync({
-          isGlobal: true,
-          imports: [ConfigModule],
-          inject: [ConfigService],
-          useFactory: useCacheFactory,
-        }),
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
@@ -88,6 +82,7 @@ export class AppModule {
           useFactory: useBullFactory,
         }),
         PrometheusModule.register(),
+        CacheManagerModule,
         MailModule,
       ],
     };
@@ -121,13 +116,13 @@ export class AppModule {
           route: '/queues',
           adapter: FastifyAdapter,
         }),
-        GatewayModule,
         ApiModule,
+        SocketModule,
       ],
       providers: [
         {
           provide: APP_GUARD,
-          useClass: ThrottlerGuard,
+          useClass: AppThrottlerGuard,
         },
       ],
     };

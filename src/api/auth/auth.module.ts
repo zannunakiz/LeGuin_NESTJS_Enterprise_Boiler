@@ -1,4 +1,5 @@
 import { QueueName } from '@/constants/job.constant';
+import { CacheModule } from '@/shared/cache/cache.module';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { BullModule } from '@nestjs/bullmq';
@@ -8,11 +9,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from '../user/entities/user.entity';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { SessionEntity } from './entities/session.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity, SessionEntity]),
+    TypeOrmModule.forFeature([UserEntity]),
     JwtModule.register({}),
     BullModule.registerQueue({
       name: QueueName.EMAIL,
@@ -21,6 +21,7 @@ import { SessionEntity } from './entities/session.entity';
       name: QueueName.EMAIL,
       adapter: BullMQAdapter,
     }),
+    CacheModule,
   ],
   controllers: [AuthController],
   providers: [AuthService],

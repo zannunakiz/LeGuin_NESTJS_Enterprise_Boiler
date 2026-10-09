@@ -10,7 +10,6 @@ describe('AuthController', () => {
     authServiceValue = {
       login: jest.fn(),
       register: jest.fn(),
-      logout: jest.fn(),
       refreshToken: jest.fn(),
     };
 

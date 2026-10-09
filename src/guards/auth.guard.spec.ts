@@ -26,6 +26,7 @@ describe('AuthGuard', () => {
       switchToHttp: jest.fn().mockReturnValue({
         getRequest: jest.fn(),
       }),
+      getType: jest.fn(),
     };
 
     module = await Test.createTestingModule({
