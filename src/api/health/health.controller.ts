@@ -47,7 +47,7 @@ export class HealthController {
     const redisOption = parseURL(getRedisURI()) ?? {};
 
     const list = [
-      () => this.db.pingCheck('database'),
+      () => this.db.pingCheck('database', { timeout: 5000 }),
       () =>
         this.microservice.pingCheck<RedisOptions>('redis', {
           transport: Transport.REDIS,
@@ -55,12 +55,17 @@ export class HealthController {
             ...redisOption,
           },
         }),
-      ...(environment === 'development'
+      () =>
+        this.http.pingCheck(
+          'prometheus',
+          `${this.configService.getOrThrow('app.url', { infer: true })}/${this.configService.getOrThrow('prometheus.path', { infer: true })}`,
+        ),
+      ...(environment === 'development' || environment === 'local'
         ? [
             () =>
               this.http.pingCheck(
                 'api-docs',
-                `${this.configService.get('app.url', { infer: true })}/api-docs`,
+                `${this.configService.getOrThrow('app.url', { infer: true })}/api-docs`,
               ),
           ]
         : []),
