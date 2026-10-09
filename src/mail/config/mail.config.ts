@@ -48,7 +48,7 @@ class EnvironmentVariablesValidator {
   MAIL_DEFAULT_NAME: string;
 }
 
-export function getConfig() {
+export function getConfig(): MailConfig {
   return {
     host: process.env.MAIL_HOST,
     port: process.env.MAIL_PORT ? parseInt(process.env.MAIL_PORT, 10) : 587,

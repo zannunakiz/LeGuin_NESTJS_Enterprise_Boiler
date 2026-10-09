@@ -1,9 +1,9 @@
 # Scalable Nest.js Boilerplate
 
+
 ## Features📦
 
-- [x] Fastify
-- [x] NestJS
+- [x] NestJS with Fastify
 - [x] Postgres
 - [x] TypeORM
 - [x] Offset and Cursor based Pagination
@@ -11,16 +11,17 @@
 - [x] Swagger Documentation and API versioning for REST API
 - [x] Automatic API generation on the frontend using OpenAPI Codegen [Learn More](#1-automatic-api-generation-on-the-frontend)
 - [x] Websockets
-- [x] BullMQ for Queues. Bull board to inspect your jobs.
+- [x] BullMQ for Queues. Bull board UI to inspect your jobs.
 - [x] Worker server for processing background tasks like queues.
 - [x] Caching using Redis
 - [x] Pino for Logging
 - [x] Rate Limiter using Redis
 - [x] Graceful Shutdown
-- [x] Server Monitoring with Grafana & Prometheus [Learn More](#4-server-monitoring)
-- [x] File Uploads
+- [x] Server & Database monitoring with Prometheus & Grafana [Learn More](#4-server-monitoring)
+- [x] File Uploads using AWS S3
 - [x] Sentry
 - [x] Testing with Jest
+- [x] Internationalization using i18n
 - [x] pnpm
 - [x] Docker: Dev & Prod ready from single script. [Learn More](#5-docker)
 - [x] Github Actions
@@ -32,7 +33,6 @@
 ### 1. Automatic API generation on the Frontend🚀
 
 You can automatically generate and use all of your backend API in frontend in just one command, thanks to Swagger and OpenAPI spec. 
-
 
 ### 2. Dependency Graph 📈
 
@@ -70,8 +70,6 @@ pnpm erd:generate
 <figcaption style="text-align: center; font-style: italic;">Sample ERD</figcaption>
 </figure>
 
-Extended from [nestjs-boilerplate](https://github.com/vndevteam/nestjs-boilerplate?tab=readme-ov-file)
-
 ### 4. Server Monitoring
 
 Prometheus & Grafana are available with Docker setup. They're available when application is ready after running `pnpm docker:<dev | prod>:up`.
@@ -80,7 +78,7 @@ Make sure to set Grafana username and password in `.env` file to access the serv
 
 ![alt text](./github-assets/server-monitoring.png)
 
-### 5. Docker
+### 5. Docker 🐬
 
 ##### For local development:
 
@@ -90,19 +88,27 @@ Make sure to set Grafana username and password in `.env` file to access the serv
 pnpm docker:dev:up
 ```
 
-- View Logs:
-
-```
-docker logs -f nestjs-boilerplate-dev
-```
-
 - Stop container:
 
 ```
 pnpm docker:dev:down
 ```
 
-##### For prod deployment:
+##### For prod build:
+
+- Start container:
+
+```
+pnpm docker:prod:up
+```
+
+- Stop container:
+
+```
+pnpm docker:prod:down
+```
+
+##### Deployment:
 
 ```
 sh ./bin/deploy.sh
