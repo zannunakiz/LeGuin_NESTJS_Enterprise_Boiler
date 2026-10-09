@@ -99,12 +99,12 @@ async function bootstrap() {
     app.useWebSocketAdapter(new WebSocketAdapter(app, configService));
   }
 
-  await app.listen(
-    isWorker
+  await app.listen({
+    port: isWorker
       ? configService.getOrThrow('app.workerPort', { infer: true })
       : configService.getOrThrow('app.port', { infer: true }),
-    '0.0.0.0',
-  );
+    host: '0.0.0.0',
+  });
 
   const httpUrl = await app.getUrl();
   const wsUrl = httpUrl

@@ -24,7 +24,7 @@
     "migration:generate": "pnpm typeorm migration:generate --pretty",
     "seed:run": "pnpm typeorm-extension seed:run",
     "seed:create": "pnpm typeorm-extension seed:create",
-    "docker:dev:up": "docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.dev.yml up -d --build",
+    "docker:dev:up": "docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.dev.yml up -d",
     "docker:dev:down": "docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.dev.yml down",
     "docker:prod:up": "docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.prod.yml up -d --build",
     "docker:prod:down": "docker compose --env-file .env --env-file .env.docker -f docker-compose.yml -f docker-compose.prod.yml down",
@@ -38,6 +38,9 @@
   "dependencies": {
     "@apollo/server": "^4.11.2",
     "@as-integrations/fastify": "^2.1.1",
+    "@bull-board/api": "^5.23.0",
+    "@bull-board/fastify": "^5.23.0",
+    "@bull-board/nestjs": "^5.23.0",
     "@fastify/multipart": "^9.0.1",
     "@fastify/static": "^7.0.4",
     "@nest-lab/fastify-multer": "^1.2.0",

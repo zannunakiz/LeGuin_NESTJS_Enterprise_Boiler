@@ -3,6 +3,7 @@ import appConfig from '@/config/app.config';
 import databaseConfig from '@/database/config/database.config';
 import mailConfig from '@/mail/config/mail.config';
 import redisConfig from '@/redis/redis.config';
+import { BullBoardModule } from '@bull-board/nestjs';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { BullModule } from '@nestjs/bullmq';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -21,6 +22,7 @@ import {
 } from 'nestjs-i18n';
 import { LoggerModule } from 'nestjs-pino';
 
+import { FastifyAdapter } from '@bull-board/fastify';
 import { GracefulShutdownModule } from 'nestjs-graceful-shutdown';
 import { ApiModule } from './api/api.module';
 import { default as useGraphqlFactory } from './graphql/graphql.factory';
@@ -112,6 +114,10 @@ export class AppModule {
           imports: [ConfigModule],
           inject: [ConfigService],
           useFactory: useThrottlerFactory,
+        }),
+        BullBoardModule.forRoot({
+          route: '/queues',
+          adapter: FastifyAdapter,
         }),
         GatewayModule,
         ApiModule,
