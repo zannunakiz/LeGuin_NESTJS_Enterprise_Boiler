@@ -20,10 +20,11 @@ class ThrottlerValidator {
 }
 
 export function getConfig(): ThrottlerConfig {
+  const enabled = process.env.THROTTLER_ENABLED === 'true';
   return {
-    enabled: process.env.THROTTLER_ENABLED === 'true',
+    enabled: enabled,
     limit: Number.parseInt(process.env.THROTTLER_LIMIT),
-    ttl: seconds(Number.parseInt(process.env.THROTTLER_TTL)),
+    ttl: enabled ? seconds(Number.parseInt(process.env.THROTTLER_TTL)) : 0,
   };
 }
 

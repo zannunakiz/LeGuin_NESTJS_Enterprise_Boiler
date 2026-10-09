@@ -1,6 +1,5 @@
 # Scalable Nest.js Boilerplate
 
-
 ## Features📦
 
 - [x] Fastify
@@ -11,28 +10,29 @@
 - [x] REST & GraphQL API
 - [x] Swagger Documentation and API versioning for REST API
 - [x] Automatic API generation on the frontend using OpenAPI Codegen [Learn More](#1-automatic-api-generation-on-the-frontend)
-- [x] Websocket
-- [x] BullMQ for Queues
+- [x] Websockets
+- [x] BullMQ for Queues. Bull board to inspect your jobs.
+- [x] Worker server for processing background tasks like queues.
 - [x] Caching using Redis
 - [x] Pino for Logging
 - [x] Rate Limiter using Redis
 - [x] Graceful Shutdown
+- [x] Server Monitoring with Grafana & Prometheus [Learn More](#4-server-monitoring)
 - [x] File Uploads
 - [x] Sentry
 - [x] Testing with Jest
 - [x] pnpm
-- [x] Docker: Dev & Prod ready on from single script.
+- [x] Docker: Dev & Prod ready from single script. [Learn More](#5-docker)
 - [x] Github Actions
 - [x] Commitlint & Husky
 - [x] SWC instead of Webpack
 - [x] Dependency Graph Visualizer [Learn More](#2-dependency-graph-)
 - [x] Database Entity Relationship Diagram Generator [Learn More](#3-database-entity-relationship-diagram️)
 
-
-
 ### 1. Automatic API generation on the Frontend🚀
 
 You can automatically generate and use all of your backend API in frontend in just one command, thanks to Swagger and OpenAPI spec. 
+
 
 ### 2. Dependency Graph 📈
 
@@ -70,8 +70,17 @@ pnpm erd:generate
 <figcaption style="text-align: center; font-style: italic;">Sample ERD</figcaption>
 </figure>
 
+Extended from [nestjs-boilerplate](https://github.com/vndevteam/nestjs-boilerplate?tab=readme-ov-file)
 
-### 4. Docker
+### 4. Server Monitoring
+
+Prometheus & Grafana are available with Docker setup. They're available when application is ready after running `pnpm docker:<dev | prod>:up`.
+
+Make sure to set Grafana username and password in `.env` file to access the server dashboards.
+
+![alt text](./github-assets/server-monitoring.png)
+
+### 5. Docker
 
 ##### For local development:
 
@@ -100,7 +109,6 @@ sh ./bin/deploy.sh
 ```
 
 or run workflow `.github/workflows/main.yml` via GitHub Actions.
-
 
 
 ### Cred

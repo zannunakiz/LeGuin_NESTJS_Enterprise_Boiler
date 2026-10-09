@@ -29,7 +29,7 @@ class EnvironmentVariablesValidator {
 
 export function getConfig() {
   return {
-    prefix: `${kebabCase(process.env.APP_NAME)}-queue`,
+    prefix: `bull-${kebabCase(process.env.APP_NAME)}`,
     redis: redisConfig() as RedisConfig,
     defaultJobOptions: {
       removeOnComplete: process.env.QUEUE_REMOVE_ON_COMPLETE === 'true',
