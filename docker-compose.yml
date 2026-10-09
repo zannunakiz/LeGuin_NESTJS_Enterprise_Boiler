@@ -9,7 +9,6 @@ services:
       - IS_WORKER=false
     ports:
       - '${APP_PORT}:${APP_PORT}'
-      - '${APP_WEBSOCKET_PORT}:${APP_WEBSOCKET_PORT}'
     networks:
       - nestjs-boilerplate-network
     depends_on:
@@ -58,6 +57,8 @@ services:
       - ./prometheus.config.yml:/etc/prometheus/prometheus.yaml:ro
     networks:
       - nestjs-boilerplate-network
+    profiles:
+      - monitoring
     depends_on:
       - setup_prometheus
 
@@ -75,9 +76,25 @@ services:
       - ./grafana/dashboards:/var/lib/grafana/dashboards
     networks:
       - nestjs-boilerplate-network
+    profiles:
+      - monitoring
     depends_on:
       - prometheus
       - setup_grafana
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: nestjs-boilerplate-postgres-exporter
+    ports:
+      - ${DOCKER_PG_EXPORTER}:9187
+    environment:
+      DATA_SOURCE_NAME: 'postgresql://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?sslmode=${DATABASE_SSL_MODE:-disable}'
+    networks:
+      - nestjs-boilerplate-network
+    profiles:
+      - monitoring
+    depends_on:
+      - prometheus
 
   # Solution to fix prometheus volume permission issue
   setup_prometheus:
@@ -92,6 +109,8 @@ services:
         chown -R 65534:65534 /prometheus
     volumes:
       - ./.docker/prometheus-data:/prometheus
+    profiles:
+      - monitoring
 
   # Solution to fix grafana volume permission issue
   setup_grafana:
@@ -106,6 +125,8 @@ services:
         chown -R 65534:65534 /var/lib/grafana
     volumes:
       - ./.docker/grafana-data:/var/lib/grafana
+    profiles:
+      - monitoring
 
 networks:
   nestjs-boilerplate-network:

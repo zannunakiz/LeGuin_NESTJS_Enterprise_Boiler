@@ -34,6 +34,7 @@ import { default as useLoggerFactory } from './tools/logger/logger-factory';
 import { default as sentryConfig } from './tools/sentry/sentry.config';
 import { default as throttlerConfig } from './tools/throttler/throttler.config';
 import { default as useThrottlerFactory } from './tools/throttler/throttler.factory';
+import { AppThrottlerGuard } from './tools/throttler/throttler.guard';
 import { default as bullConfig } from './worker/queues/bull.config';
 import { default as useBullFactory } from './worker/queues/bull.factory';
 import { WorkerModule } from './worker/worker.module';
@@ -115,13 +116,13 @@ export class AppModule {
           route: '/queues',
           adapter: FastifyAdapter,
         }),
-        SocketModule,
         ApiModule,
+        SocketModule,
       ],
       providers: [
         {
           provide: APP_GUARD,
-          useClass: ThrottlerGuard,
+          useClass: AppThrottlerGuard,
         },
       ],
     };

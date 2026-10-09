@@ -1,3 +1,4 @@
+import { ApiModule } from '@/api/api.module';
 import { GlobalConfig } from '@/config/config.type';
 import { ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigService } from '@nestjs/config';
@@ -25,6 +26,8 @@ function useGraphqlFactory(
       }
       return err;
     },
+    include: [ApiModule],
+    context: (req, res) => ({ req, res }),
   };
 }
 
