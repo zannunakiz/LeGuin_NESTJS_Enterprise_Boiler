@@ -17,11 +17,11 @@
 - [x] Pino for Logging
 - [x] Rate Limiter using Redis
 - [x] Graceful Shutdown
-- [x] Server Monitoring with Prometheus & Grafana [Learn More](#4-server-monitoring)
+- [x] Server & Database monitoring with Prometheus & Grafana [Learn More](#4-server-monitoring)
 - [x] File Uploads using AWS S3
 - [x] Sentry
 - [x] Testing with Jest
-- [x] Internationalization using i18n 
+- [x] Internationalization using i18n
 - [x] pnpm
 - [x] Docker: Dev & Prod ready from single script. [Learn More](#5-docker)
 - [x] Github Actions
@@ -78,7 +78,7 @@ Make sure to set Grafana username and password in `.env` file to access the serv
 
 ![alt text](./github-assets/server-monitoring.png)
 
-### 5. Docker
+### 5. Docker 🐬
 
 ##### For local development:
 
@@ -88,19 +88,27 @@ Make sure to set Grafana username and password in `.env` file to access the serv
 pnpm docker:dev:up
 ```
 
-- View Logs:
-
-```
-docker logs -f nestjs-boilerplate-dev
-```
-
 - Stop container:
 
 ```
 pnpm docker:dev:down
 ```
 
-##### For prod deployment:
+##### For prod build:
+
+- Start container:
+
+```
+pnpm docker:prod:up
+```
+
+- Stop container:
+
+```
+pnpm docker:prod:down
+```
+
+##### Deployment:
 
 ```
 sh ./bin/deploy.sh
