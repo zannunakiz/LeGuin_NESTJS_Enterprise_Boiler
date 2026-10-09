@@ -2,6 +2,7 @@ import validateConfig from '@/utils/validate-config';
 import { registerAs } from '@nestjs/config';
 import {
   IsBoolean,
+  IsEnum,
   IsInt,
   IsOptional,
   IsPositive,
@@ -10,7 +11,7 @@ import {
   Min,
   ValidateIf,
 } from 'class-validator';
-import { DatabaseConfig } from './database-config.type';
+import { DatabaseConfig, DatabaseSSLMode } from './database-config.type';
 
 class EnvironmentVariablesValidator {
   @ValidateIf((envValues) => envValues.DATABASE_URL)
@@ -48,9 +49,9 @@ class EnvironmentVariablesValidator {
   @IsOptional()
   DATABASE_MAX_CONNECTIONS: number;
 
-  @IsBoolean()
   @IsOptional()
-  DATABASE_SSL: boolean;
+  @IsEnum(DatabaseSSLMode)
+  DATABASE_SSL_MODE: DatabaseSSLMode;
 
   @IsBoolean()
   @IsOptional()
@@ -85,7 +86,7 @@ export function getConfig(): DatabaseConfig {
       ? parseInt(process.env.DATABASE_MAX_CONNECTIONS, 10)
       : 100,
     ssl:
-      process.env.DATABASE_SSL === 'true'
+      process.env.DATABASE_SSL_MODE === DatabaseSSLMode.require
         ? {
             rejectUnauthorized:
               process.env.DATABASE_REJECT_UNAUTHORIZED === 'true',
