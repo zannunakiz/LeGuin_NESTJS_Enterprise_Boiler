@@ -36,7 +36,7 @@ describe('AuthConfig', () => {
     it('should return the value of AUTH_JWT_TOKEN_EXPIRES_IN', async () => {
       process.env.AUTH_JWT_TOKEN_EXPIRES_IN = '1d';
       const config = await authConfig();
-      expect(config.expires).toBe('1d');
+      expect(config.expiresIn).toBe('1d');
     });
 
     it('should throw an error when AUTH_JWT_TOKEN_EXPIRES_IN is an empty', async () => {
@@ -77,7 +77,7 @@ describe('AuthConfig', () => {
     it('should return the value of AUTH_REFRESH_TOKEN_EXPIRES_IN', async () => {
       process.env.AUTH_REFRESH_TOKEN_EXPIRES_IN = '1d';
       const config = await authConfig();
-      expect(config.refreshExpires).toBe('1d');
+      expect(config.refreshExpiresIn).toBe('1d');
     });
 
     it('should throw an error when AUTH_REFRESH_TOKEN_EXPIRES_IN is an empty', async () => {
@@ -118,7 +118,7 @@ describe('AuthConfig', () => {
     it('should return the value of AUTH_FORGOT_TOKEN_EXPIRES_IN', async () => {
       process.env.AUTH_FORGOT_TOKEN_EXPIRES_IN = '1d';
       const config = await authConfig();
-      expect(config.forgotExpires).toBe('1d');
+      expect(config.forgotExpiresIn).toBe('1d');
     });
 
     it('should throw an error when AUTH_FORGOT_TOKEN_EXPIRES_IN is an empty', async () => {
@@ -159,7 +159,7 @@ describe('AuthConfig', () => {
     it('should return the value of AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN', async () => {
       process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN = '1d';
       const config = await authConfig();
-      expect(config.confirmEmailExpires).toBe('1d');
+      expect(config.confirmEmailExpiresIn).toBe('1d');
     });
 
     it('should throw an error when AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN is an empty', async () => {

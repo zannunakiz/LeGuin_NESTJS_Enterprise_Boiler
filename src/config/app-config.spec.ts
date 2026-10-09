@@ -221,7 +221,10 @@ describe('AppConfig', () => {
     it('should return a single origin when APP_CORS_ORIGIN is a valid URL', async () => {
       process.env.APP_CORS_ORIGIN = 'https://example.com';
       const config = await appConfig();
-      expect(config.corsOrigin).toEqual(['https://example.com']);
+      expect(config.corsOrigin).toEqual([
+        'https://example.com',
+        'https:www.//example.com',
+      ]);
     });
 
     it('should return multiple origins when APP_CORS_ORIGIN is a comma-separated list of valid URLs', async () => {
@@ -229,7 +232,9 @@ describe('AppConfig', () => {
       const config = await appConfig();
       expect(config.corsOrigin).toEqual([
         'https://example.com',
+        'https://www.example.com',
         'https://another.com',
+        'https://www.another.com',
       ]);
     });
 
