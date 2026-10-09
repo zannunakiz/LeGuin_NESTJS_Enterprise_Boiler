@@ -223,7 +223,7 @@ describe('AppConfig', () => {
       const config = await appConfig();
       expect(config.corsOrigin).toEqual([
         'https://example.com',
-        'https:www.//example.com',
+        'https://www.example.com',
       ]);
     });
 
